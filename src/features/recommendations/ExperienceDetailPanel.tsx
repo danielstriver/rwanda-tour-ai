@@ -29,12 +29,12 @@ export function ExperienceDetailPanel({
   recommendation,
   onBackToExperiences,
 }: ExperienceDetailPanelProps) {
-  const mutedText = useColorModeValue("gray.600", "whiteAlpha.740");
-  const subtleText = useColorModeValue("gray.500", "whiteAlpha.620");
-  const titleColor = useColorModeValue("gray.900", "whiteAlpha.950");
-  const highlightBg = useColorModeValue("blackAlpha.50", "rgba(255,255,255,0.04)");
-  const metaBg = useColorModeValue("rgba(255,255,255,0.74)", "rgba(255,255,255,0.05)");
-  const metaBorderColor = useColorModeValue("rgba(15,23,42,0.08)", "rgba(255,255,255,0.08)");
+  const mutedText = "appMuted";
+  const subtleText = "appMuted";
+  const titleColor = "appHeading";
+  const highlightBg = useColorModeValue("blackAlpha.50", "rgba(255,255,255,0.06)");
+  const metaBg = useColorModeValue("rgba(255,255,255,0.74)", "rgba(255,255,255,0.08)");
+  const metaBorderColor = useColorModeValue("rgba(15,23,42,0.08)", "rgba(255,255,255,0.12)");
 
   return (
     <Container id="experience-details" maxW="7xl" pb={{ base: 16, md: 24 }}>

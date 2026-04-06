@@ -20,7 +20,7 @@ const theme = extendTheme({
       },
       body: {
         bg: "transparent",
-        color: "gray.800",
+        color: "appText",
         transitionProperty: "background-color, color",
         transitionDuration: "220ms",
       },
@@ -72,9 +72,13 @@ const theme = extendTheme({
         default: "gray.800",
         _dark: "whiteAlpha.900",
       },
+      appHeading: {
+        default: "gray.900",
+        _dark: "whiteAlpha.950",
+      },
       appMuted: {
         default: "gray.600",
-        _dark: "whiteAlpha.760",
+        _dark: "whiteAlpha.720",
       },
       appSurface: {
         default: "rgba(255,255,255,0.72)",

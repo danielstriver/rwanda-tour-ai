@@ -20,9 +20,9 @@ export function PreferenceSelector<TOption extends string>({
   options,
   onChange,
 }: PreferenceSelectorProps<TOption>) {
-  const labelColor = useColorModeValue("gray.800", "whiteAlpha.900");
-  const outlineBg = useColorModeValue("transparent", "whiteAlpha.70");
-  const outlineText = useColorModeValue("gray.700", "whiteAlpha.820");
+  const labelColor = "appHeading";
+  const outlineBg = useColorModeValue("whiteAlpha.50", "whiteAlpha.100");
+  const outlineText = useColorModeValue("gray.700", "whiteAlpha.800");
 
   return (
     <Stack spacing={3}>

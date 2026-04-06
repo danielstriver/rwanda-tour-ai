@@ -17,8 +17,8 @@ export function RecommendationSection({ onReady }: RecommendationSectionProps) {
   );
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const detailsRef = useRef<HTMLDivElement | null>(null);
-  const titleColor = useColorModeValue("gray.900", "whiteAlpha.950");
-  const subtitleColor = useColorModeValue("gray.600", "whiteAlpha.720");
+  const titleColor = "appHeading";
+  const subtitleColor = "appMuted";
 
   useEffect(() => {
     onReady?.({

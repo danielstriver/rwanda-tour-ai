@@ -19,12 +19,12 @@ import { PreferenceSelector } from "./PreferenceSelector";
 
 export function PreferenceSection() {
   const { preferences, updatePreference } = usePreferenceState();
-  const titleColor = useColorModeValue("gray.900", "whiteAlpha.950");
-  const subtitleColor = useColorModeValue("gray.600", "whiteAlpha.720");
-  const captionColor = useColorModeValue("gray.500", "whiteAlpha.620");
+  const titleColor = "appHeading";
+  const subtitleColor = "appMuted";
+  const captionColor = "appMuted";
   const activeChipBg = useColorModeValue("brand.50", "rgba(54,175,99,0.18)");
   const passiveChipBg = useColorModeValue("gray.100", "whiteAlpha.100");
-  const chipTextColor = useColorModeValue("gray.800", "whiteAlpha.880");
+  const chipTextColor = "appText";
   const activeChipColor = useColorModeValue("brand.700", "brand.200");
 
   return (

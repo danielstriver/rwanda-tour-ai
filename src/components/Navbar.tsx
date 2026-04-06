@@ -20,10 +20,10 @@ export function Navbar() {
   const isDark = colorMode === "dark";
   const shellBg = useColorModeValue("rgba(255,255,255,0.56)", "rgba(6,10,14,0.72)");
   const borderColor = useColorModeValue("rgba(15,23,42,0.08)", "rgba(226,232,240,0.08)");
-  const titleColor = useColorModeValue("gray.900", "whiteAlpha.950");
-  const subText = useColorModeValue("gray.500", "whiteAlpha.680");
+  const titleColor = "appHeading";
+  const subText = "appMuted";
   const switchBg = useColorModeValue("rgba(255,255,255,0.88)", "rgba(255,255,255,0.07)");
-  const switchTextColor = useColorModeValue("gray.800", "whiteAlpha.860");
+  const switchTextColor = "appText";
 
   return (
     <Box

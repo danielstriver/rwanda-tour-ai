@@ -12,9 +12,9 @@ interface HeroSectionProps {
 export function HeroSection({ onStartExploring }: HeroSectionProps) {
   const eyebrowBg = useColorModeValue("rgba(255,255,255,0.72)", "rgba(255,255,255,0.08)");
   const eyebrowColor = useColorModeValue("brand.700", "brand.200");
-  const headingColor = useColorModeValue("gray.900", "whiteAlpha.960");
-  const subtitleColor = useColorModeValue("gray.600", "whiteAlpha.820");
-  const bodyColor = useColorModeValue("gray.600", "whiteAlpha.740");
+  const headingColor = "appHeading";
+  const subtitleColor = "appMuted";
+  const bodyColor = "appText";
 
   return (
     <Container maxW="7xl" py={{ base: 16, md: 24 }}>

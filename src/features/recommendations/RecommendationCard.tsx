@@ -26,12 +26,12 @@ export function RecommendationCard({
   index,
   onViewExperience,
 }: RecommendationCardProps) {
-  const titleColor = useColorModeValue("gray.900", "whiteAlpha.950");
-  const bodyColor = useColorModeValue("gray.600", "whiteAlpha.720");
-  const priceColor = useColorModeValue("brand.700", "brand.300");
-  const chipBg = useColorModeValue("rgba(7,11,16,0.68)", "rgba(7,11,16,0.82)");
-  const chipBorderColor = useColorModeValue("rgba(255,255,255,0.14)", "rgba(255,255,255,0.12)");
-  const chipTextColor = "whiteAlpha.940";
+  const titleColor = "appHeading";
+  const bodyColor = "appMuted";
+  const priceColor = useColorModeValue("brand.600", "brand.300");
+  const chipBg = useColorModeValue("rgba(11, 18, 24, 0.88)", "rgba(0, 0, 0, 0.92)");
+  const chipBorderColor = useColorModeValue("rgba(255, 255, 255, 0.12)", "brand.800");
+  const chipTextColor = useColorModeValue("whiteAlpha.900", "brand.100");
 
   return (
     <MotionBox
@@ -47,18 +47,18 @@ export function RecommendationCard({
           <Box position="absolute" left={5} top={5}>
             <HStack
               spacing={2}
-              px={3}
-              py={2}
+              px={4}
+              py={2.5}
               rounded="full"
               bg={chipBg}
               borderWidth="1px"
               borderColor={chipBorderColor}
-              backdropFilter="blur(10px)"
+              backdropFilter="blur(14px)"
               color={chipTextColor}
-              boxShadow="0 10px 30px rgba(0, 0, 0, 0.18)"
+              boxShadow="0 12px 30px rgba(0, 0, 0, 0.24)"
             >
-              <Icon as={recommendation.icon} boxSize={4} />
-              <Text fontSize="sm" fontWeight="semibold">
+              <Icon as={recommendation.icon} boxSize={4} color="brand.400" />
+              <Text fontSize="xs" fontWeight="bold" textTransform="uppercase" letterSpacing="0.04em">
                 {recommendation.bestFor}
               </Text>
             </HStack>
@@ -73,12 +73,12 @@ export function RecommendationCard({
               </Heading>
               <HStack spacing={2} color={bodyColor}>
                 <MapPin size={15} />
-                <Text fontSize="sm">{recommendation.shortLocation}</Text>
+                <Text fontSize="sm" fontWeight="medium">{recommendation.shortLocation}</Text>
               </HStack>
             </Stack>
-            <Text color={bodyColor}>{recommendation.description}</Text>
+            <Text color={bodyColor} lineHeight="tall">{recommendation.description}</Text>
           </Stack>
-          <Text fontWeight="semibold" color={priceColor}>
+          <Text fontSize="lg" fontWeight="bold" color={priceColor}>
             {recommendation.priceRange}
           </Text>
           <Button
@@ -87,6 +87,11 @@ export function RecommendationCard({
             variant="outline"
             rightIcon={<ArrowRight size={16} />}
             onClick={() => onViewExperience(recommendation.id)}
+            _hover={{
+              bg: "brand.500",
+              color: "white",
+              borderColor: "brand.500",
+            }}
           >
             View Experience
           </Button>
