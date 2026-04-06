@@ -7,8 +7,14 @@ export type TripDuration = "1 day" | "3 days" | "1 week";
 export interface Recommendation {
   id: string;
   title: string;
+  shortLocation: string;
   description: string;
+  longDescription: string;
   priceRange: string;
+  duration: string;
+  bestFor: string;
+  highlights: string[];
+  imagePaths: string[];
   icon: LucideIcon;
   accent: string;
 }

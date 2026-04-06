@@ -3,22 +3,34 @@ import {
   Button,
   Heading,
   Icon,
+  HStack,
   Stack,
   Text,
+  useColorModeValue,
 } from "@chakra-ui/react";
+import { ArrowRight, MapPin } from "lucide-react";
 
 import { MotionBox } from "../../components/MotionBox";
+import { SectionShell } from "../../components/SectionShell";
 import type { Recommendation } from "../../types/recommendation";
+import { ExperienceImageCarousel } from "./ExperienceImageCarousel";
 
 interface RecommendationCardProps {
   recommendation: Recommendation;
   index: number;
+  onViewExperience: (recommendationId: string) => void;
 }
 
 export function RecommendationCard({
   recommendation,
   index,
+  onViewExperience,
 }: RecommendationCardProps) {
+  const titleColor = useColorModeValue("gray.900", "white");
+  const bodyColor = useColorModeValue("gray.600", "whiteAlpha.760");
+  const priceColor = useColorModeValue("brand.700", "brand.300");
+  const chipBg = useColorModeValue("whiteAlpha.800", "blackAlpha.400");
+
   return (
     <MotionBox
       initial={{ opacity: 0, y: 32 }}
@@ -26,50 +38,57 @@ export function RecommendationCard({
       viewport={{ once: true, amount: 0.2 }}
       transition={{ duration: 0.45, delay: index * 0.08, ease: "easeOut" }}
     >
-      <Box
-        overflow="hidden"
-        rounded="3xl"
-        bg="white"
-        borderWidth="1px"
-        borderColor="blackAlpha.100"
-        boxShadow="lg"
-        h="100%"
-      >
-        <Box
-          minH="220px"
-          px={6}
-          py={7}
-          display="flex"
-          alignItems="flex-end"
-          backgroundImage={recommendation.accent}
-        >
-          <Box
-            boxSize={14}
-            display="inline-flex"
-            alignItems="center"
-            justifyContent="center"
-            rounded="2xl"
-            bg="whiteAlpha.250"
-            backdropFilter="blur(10px)"
-            color="white"
-          >
-            <Icon as={recommendation.icon} boxSize={7} />
+      <SectionShell overflow="hidden" h="100%">
+        <Box position="relative" minH="260px">
+          <ExperienceImageCarousel images={recommendation.imagePaths} alt={recommendation.title} />
+
+          <Box position="absolute" left={5} top={5}>
+            <HStack
+              spacing={2}
+              px={3}
+              py={2}
+              rounded="full"
+              bg={chipBg}
+              borderWidth="1px"
+              borderColor="whiteAlpha.300"
+              backdropFilter="blur(10px)"
+              color="white"
+            >
+              <Icon as={recommendation.icon} boxSize={4} />
+              <Text fontSize="sm" fontWeight="semibold">
+                {recommendation.bestFor}
+              </Text>
+            </HStack>
           </Box>
         </Box>
 
         <Stack spacing={4} p={6}>
-          <Stack spacing={2}>
-            <Heading size="md">{recommendation.title}</Heading>
-            <Text color="gray.500">{recommendation.description}</Text>
+          <Stack spacing={3}>
+            <Stack spacing={1.5}>
+              <Heading size="md" color={titleColor}>
+                {recommendation.title}
+              </Heading>
+              <HStack spacing={2} color={bodyColor}>
+                <MapPin size={15} />
+                <Text fontSize="sm">{recommendation.shortLocation}</Text>
+              </HStack>
+            </Stack>
+            <Text color={bodyColor}>{recommendation.description}</Text>
           </Stack>
-          <Text fontWeight="semibold" color="brand.700">
+          <Text fontWeight="semibold" color={priceColor}>
             {recommendation.priceRange}
           </Text>
-          <Button alignSelf="flex-start" colorScheme="green" variant="outline">
+          <Button
+            alignSelf="flex-start"
+            colorScheme="green"
+            variant="outline"
+            rightIcon={<ArrowRight size={16} />}
+            onClick={() => onViewExperience(recommendation.id)}
+          >
             View Experience
           </Button>
         </Stack>
-      </Box>
+      </SectionShell>
     </MotionBox>
   );
 }

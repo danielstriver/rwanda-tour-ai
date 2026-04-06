@@ -4,29 +4,35 @@ import {
   Container,
   Flex,
   HStack,
-  IconButton,
   Menu,
   MenuButton,
   MenuItem,
   MenuList,
+  Switch,
   Text,
   useColorMode,
+  useColorModeValue,
 } from "@chakra-ui/react";
-import { ChevronDown, Globe2, Moon, SunMedium } from "lucide-react";
+import { ChevronDown, Globe2, MoonStar, SunMedium } from "lucide-react";
 
 export function Navbar() {
   const { colorMode, toggleColorMode } = useColorMode();
+  const isDark = colorMode === "dark";
+  const shellBg = useColorModeValue("rgba(255,255,255,0.56)", "rgba(6,10,14,0.72)");
+  const borderColor = useColorModeValue("rgba(15,23,42,0.08)", "rgba(226,232,240,0.08)");
+  const subText = useColorModeValue("gray.500", "whiteAlpha.600");
+  const switchBg = useColorModeValue("rgba(255,255,255,0.88)", "rgba(255,255,255,0.06)");
 
   return (
     <Box
       as="header"
       position="sticky"
       top="0"
-      zIndex="10"
-      backdropFilter="blur(14px)"
-      bg={colorMode === "light" ? "rgba(255,255,255,0.86)" : "rgba(23,25,35,0.82)"}
+      zIndex="20"
+      backdropFilter="blur(18px)"
+      bg={shellBg}
       borderBottomWidth="1px"
-      borderColor={colorMode === "light" ? "blackAlpha.100" : "whiteAlpha.200"}
+      borderColor={borderColor}
     >
       <Container maxW="7xl" py={4}>
         <Flex align="center" justify="space-between" gap={4}>
@@ -45,19 +51,21 @@ export function Navbar() {
             </Flex>
             <Box>
               <Text fontWeight="bold">Rwanda Tour AI</Text>
-              <Text fontSize="sm" color="gray.500">
+              <Text fontSize="sm" color={subText}>
                 Smart tourism discovery
               </Text>
             </Box>
           </HStack>
 
-          <HStack spacing={3}>
+          <HStack spacing={3} flexWrap="wrap" justify="flex-end">
             <Menu>
               <MenuButton
                 as={Button}
                 leftIcon={<Globe2 size={16} />}
                 rightIcon={<ChevronDown size={16} />}
                 variant="outline"
+                bg={switchBg}
+                borderColor={borderColor}
               >
                 English
               </MenuButton>
@@ -68,12 +76,21 @@ export function Navbar() {
               </MenuList>
             </Menu>
 
-            <IconButton
-              aria-label="Toggle dark mode"
-              icon={colorMode === "light" ? <Moon size={18} /> : <SunMedium size={18} />}
-              onClick={toggleColorMode}
-              variant="outline"
-            />
+            <HStack
+              spacing={3}
+              px={4}
+              py={2.5}
+              rounded="full"
+              bg={switchBg}
+              borderWidth="1px"
+              borderColor={borderColor}
+            >
+              {isDark ? <MoonStar size={16} /> : <SunMedium size={16} />}
+              <Text fontSize="sm" fontWeight="medium">
+                {isDark ? "Dark" : "Light"}
+              </Text>
+              <Switch colorScheme="green" isChecked={isDark} onChange={toggleColorMode} />
+            </HStack>
           </HStack>
         </Flex>
       </Container>

@@ -1,28 +1,81 @@
-import { Container, Heading, SimpleGrid, Stack, Text } from "@chakra-ui/react";
+import { Box, Container, Heading, SimpleGrid, Stack, Text, useColorModeValue } from "@chakra-ui/react";
+import { useEffect, useRef, useState } from "react";
 
+import { SectionShell } from "../../components/SectionShell";
 import { SAMPLE_RECOMMENDATIONS } from "../../utils/constants";
+import type { Recommendation } from "../../types/recommendation";
+import { ExperienceDetailPanel } from "./ExperienceDetailPanel";
 import { RecommendationCard } from "./RecommendationCard";
 
-export function RecommendationSection() {
-  return (
-    <Container maxW="7xl" pb={{ base: 16, md: 24 }}>
-      <Stack spacing={6} mb={8}>
-        <Heading size="lg">Sample Experiences</Heading>
-        <Text color="gray.500" maxW="2xl">
-          Static mock recommendations for the first MVP. The recommendation engine will be
-          layered in later without replacing the UI foundation.
-        </Text>
-      </Stack>
+interface RecommendationSectionProps {
+  onReady?: (actions: { scrollToRecommendations: () => void }) => void;
+}
 
-      <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6}>
-        {SAMPLE_RECOMMENDATIONS.map((recommendation, index) => (
-          <RecommendationCard
-            key={recommendation.id}
-            recommendation={recommendation}
-            index={index}
-          />
-        ))}
-      </SimpleGrid>
-    </Container>
+export function RecommendationSection({ onReady }: RecommendationSectionProps) {
+  const [selectedRecommendation, setSelectedRecommendation] = useState<Recommendation>(
+    SAMPLE_RECOMMENDATIONS[0],
+  );
+  const sectionRef = useRef<HTMLDivElement | null>(null);
+  const detailsRef = useRef<HTMLDivElement | null>(null);
+  const subtitleColor = useColorModeValue("gray.600", "whiteAlpha.700");
+
+  useEffect(() => {
+    onReady?.({
+      scrollToRecommendations: () => {
+        sectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      },
+    });
+  }, [onReady]);
+
+  const handleViewExperience = (recommendationId: string) => {
+    const recommendation = SAMPLE_RECOMMENDATIONS.find((item) => item.id === recommendationId);
+
+    if (!recommendation) {
+      return;
+    }
+
+    setSelectedRecommendation(recommendation);
+
+    window.requestAnimationFrame(() => {
+      detailsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  };
+
+  const handleBackToExperiences = () => {
+    sectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  return (
+    <>
+      <Container ref={sectionRef} id="experiences" maxW="7xl" pb={{ base: 8, md: 10 }}>
+        <SectionShell px={{ base: 5, md: 8 }} py={{ base: 6, md: 8 }} mb={8}>
+          <Stack spacing={6}>
+            <Heading size="lg">Sample Experiences</Heading>
+            <Text color={subtitleColor} maxW="2xl">
+              Each card now previews real destination imagery and opens a richer experience view
+              inline, keeping the MVP fast while making the section feel product-ready.
+            </Text>
+          </Stack>
+        </SectionShell>
+
+        <SimpleGrid columns={{ base: 1, md: 2, xl: 3 }} spacing={6}>
+          {SAMPLE_RECOMMENDATIONS.map((recommendation, index) => (
+            <RecommendationCard
+              key={recommendation.id}
+              recommendation={recommendation}
+              index={index}
+              onViewExperience={handleViewExperience}
+            />
+          ))}
+        </SimpleGrid>
+      </Container>
+
+      <Box ref={detailsRef}>
+        <ExperienceDetailPanel
+          recommendation={selectedRecommendation}
+          onBackToExperiences={handleBackToExperiences}
+        />
+      </Box>
+    </>
   );
 }
