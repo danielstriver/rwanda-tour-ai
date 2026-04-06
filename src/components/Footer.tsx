@@ -3,8 +3,9 @@ import { Github, MapPinned } from "lucide-react";
 
 export function Footer() {
   const borderColor = useColorModeValue("rgba(15,23,42,0.08)", "rgba(226,232,240,0.08)");
-  const bodyColor = useColorModeValue("gray.600", "whiteAlpha.700");
-  const linkColor = useColorModeValue("gray.700", "whiteAlpha.820");
+  const brandColor = useColorModeValue("brand.700", "brand.300");
+  const bodyColor = useColorModeValue("gray.600", "whiteAlpha.720");
+  const linkColor = useColorModeValue("gray.700", "whiteAlpha.860");
 
   return (
     <Box as="footer" borderTopWidth="1px" borderColor={borderColor} py={10}>
@@ -16,7 +17,7 @@ export function Footer() {
           spacing={5}
         >
           <Stack spacing={2}>
-            <HStack spacing={2} color="brand.700">
+            <HStack spacing={2} color={brandColor}>
               <MapPinned size={18} />
               <Text fontWeight="bold">Rwanda Tour AI</Text>
             </HStack>

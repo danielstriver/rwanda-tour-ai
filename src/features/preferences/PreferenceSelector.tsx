@@ -2,6 +2,7 @@ import {
   Button,
   Heading,
   Stack,
+  useColorModeValue,
   Wrap,
   WrapItem,
 } from "@chakra-ui/react";
@@ -19,9 +20,15 @@ export function PreferenceSelector<TOption extends string>({
   options,
   onChange,
 }: PreferenceSelectorProps<TOption>) {
+  const labelColor = useColorModeValue("gray.800", "whiteAlpha.900");
+  const outlineBg = useColorModeValue("transparent", "whiteAlpha.70");
+  const outlineText = useColorModeValue("gray.700", "whiteAlpha.820");
+
   return (
     <Stack spacing={3}>
-      <Heading size="sm">{label}</Heading>
+      <Heading size="sm" color={labelColor}>
+        {label}
+      </Heading>
       <Wrap spacing={3}>
         {options.map((option) => {
           const isActive = option === value;
@@ -32,6 +39,8 @@ export function PreferenceSelector<TOption extends string>({
                 size="sm"
                 variant={isActive ? "solid" : "outline"}
                 colorScheme={isActive ? "green" : "gray"}
+                bg={isActive ? undefined : outlineBg}
+                color={isActive ? undefined : outlineText}
                 onClick={() => onChange(option)}
               >
                 {option}

@@ -29,11 +29,12 @@ export function ExperienceDetailPanel({
   recommendation,
   onBackToExperiences,
 }: ExperienceDetailPanelProps) {
-  const mutedText = useColorModeValue("gray.600", "whiteAlpha.760");
-  const subtleText = useColorModeValue("gray.500", "whiteAlpha.600");
-  const titleColor = useColorModeValue("gray.900", "white");
-  const highlightBg = useColorModeValue("blackAlpha.50", "whiteAlpha.80");
-  const metaBg = useColorModeValue("rgba(255,255,255,0.74)", "rgba(255,255,255,0.06)");
+  const mutedText = useColorModeValue("gray.600", "whiteAlpha.740");
+  const subtleText = useColorModeValue("gray.500", "whiteAlpha.620");
+  const titleColor = useColorModeValue("gray.900", "whiteAlpha.950");
+  const highlightBg = useColorModeValue("blackAlpha.50", "rgba(255,255,255,0.04)");
+  const metaBg = useColorModeValue("rgba(255,255,255,0.74)", "rgba(255,255,255,0.05)");
+  const metaBorderColor = useColorModeValue("rgba(15,23,42,0.08)", "rgba(255,255,255,0.08)");
 
   return (
     <Container id="experience-details" maxW="7xl" pb={{ base: 16, md: 24 }}>
@@ -57,7 +58,7 @@ export function ExperienceDetailPanel({
                 <HStack
                   spacing={2}
                   align="center"
-                  color="brand.300"
+                  color={useColorModeValue("brand.700", "brand.300")}
                   fontSize="sm"
                   textTransform="uppercase"
                   letterSpacing="0.14em"
@@ -74,7 +75,7 @@ export function ExperienceDetailPanel({
               </Stack>
 
               <SimpleGrid columns={{ base: 1, sm: 3 }} spacing={3}>
-                <Box rounded="2xl" p={4} bg={metaBg} borderWidth="1px" borderColor="whiteAlpha.200">
+                <Box rounded="2xl" p={4} bg={metaBg} borderWidth="1px" borderColor={metaBorderColor}>
                   <HStack spacing={2} color={subtleText} mb={1}>
                     <MapPin size={16} />
                     <Text fontSize="sm">Location</Text>
@@ -83,7 +84,7 @@ export function ExperienceDetailPanel({
                     {recommendation.shortLocation}
                   </Text>
                 </Box>
-                <Box rounded="2xl" p={4} bg={metaBg} borderWidth="1px" borderColor="whiteAlpha.200">
+                <Box rounded="2xl" p={4} bg={metaBg} borderWidth="1px" borderColor={metaBorderColor}>
                   <HStack spacing={2} color={subtleText} mb={1}>
                     <Clock3 size={16} />
                     <Text fontSize="sm">Suggested stay</Text>
@@ -92,7 +93,7 @@ export function ExperienceDetailPanel({
                     {recommendation.duration}
                   </Text>
                 </Box>
-                <Box rounded="2xl" p={4} bg={metaBg} borderWidth="1px" borderColor="whiteAlpha.200">
+                <Box rounded="2xl" p={4} bg={metaBg} borderWidth="1px" borderColor={metaBorderColor}>
                   <HStack spacing={2} color={subtleText} mb={1}>
                     <Icon as={recommendation.icon} boxSize={4} />
                     <Text fontSize="sm">Price range</Text>

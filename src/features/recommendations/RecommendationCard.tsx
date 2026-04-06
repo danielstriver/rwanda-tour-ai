@@ -26,10 +26,12 @@ export function RecommendationCard({
   index,
   onViewExperience,
 }: RecommendationCardProps) {
-  const titleColor = useColorModeValue("gray.900", "white");
-  const bodyColor = useColorModeValue("gray.600", "whiteAlpha.760");
+  const titleColor = useColorModeValue("gray.900", "whiteAlpha.950");
+  const bodyColor = useColorModeValue("gray.600", "whiteAlpha.720");
   const priceColor = useColorModeValue("brand.700", "brand.300");
-  const chipBg = useColorModeValue("whiteAlpha.800", "blackAlpha.400");
+  const chipBg = useColorModeValue("rgba(7,11,16,0.68)", "rgba(7,11,16,0.82)");
+  const chipBorderColor = useColorModeValue("rgba(255,255,255,0.14)", "rgba(255,255,255,0.12)");
+  const chipTextColor = "whiteAlpha.940";
 
   return (
     <MotionBox
@@ -50,9 +52,10 @@ export function RecommendationCard({
               rounded="full"
               bg={chipBg}
               borderWidth="1px"
-              borderColor="whiteAlpha.300"
+              borderColor={chipBorderColor}
               backdropFilter="blur(10px)"
-              color="white"
+              color={chipTextColor}
+              boxShadow="0 10px 30px rgba(0, 0, 0, 0.18)"
             >
               <Icon as={recommendation.icon} boxSize={4} />
               <Text fontSize="sm" fontWeight="semibold">

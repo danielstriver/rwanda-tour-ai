@@ -20,8 +20,10 @@ export function Navbar() {
   const isDark = colorMode === "dark";
   const shellBg = useColorModeValue("rgba(255,255,255,0.56)", "rgba(6,10,14,0.72)");
   const borderColor = useColorModeValue("rgba(15,23,42,0.08)", "rgba(226,232,240,0.08)");
-  const subText = useColorModeValue("gray.500", "whiteAlpha.600");
-  const switchBg = useColorModeValue("rgba(255,255,255,0.88)", "rgba(255,255,255,0.06)");
+  const titleColor = useColorModeValue("gray.900", "whiteAlpha.950");
+  const subText = useColorModeValue("gray.500", "whiteAlpha.680");
+  const switchBg = useColorModeValue("rgba(255,255,255,0.88)", "rgba(255,255,255,0.07)");
+  const switchTextColor = useColorModeValue("gray.800", "whiteAlpha.860");
 
   return (
     <Box
@@ -50,7 +52,9 @@ export function Navbar() {
               R
             </Flex>
             <Box>
-              <Text fontWeight="bold">Rwanda Tour AI</Text>
+              <Text fontWeight="bold" color={titleColor}>
+                Rwanda Tour AI
+              </Text>
               <Text fontSize="sm" color={subText}>
                 Smart tourism discovery
               </Text>
@@ -86,7 +90,7 @@ export function Navbar() {
               borderColor={borderColor}
             >
               {isDark ? <MoonStar size={16} /> : <SunMedium size={16} />}
-              <Text fontSize="sm" fontWeight="medium">
+              <Text fontSize="sm" fontWeight="medium" color={switchTextColor}>
                 {isDark ? "Dark" : "Light"}
               </Text>
               <Switch colorScheme="green" isChecked={isDark} onChange={toggleColorMode} />

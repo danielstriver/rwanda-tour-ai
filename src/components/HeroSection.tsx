@@ -12,8 +12,9 @@ interface HeroSectionProps {
 export function HeroSection({ onStartExploring }: HeroSectionProps) {
   const eyebrowBg = useColorModeValue("rgba(255,255,255,0.72)", "rgba(255,255,255,0.08)");
   const eyebrowColor = useColorModeValue("brand.700", "brand.200");
-  const subtitleColor = useColorModeValue("gray.600", "whiteAlpha.700");
-  const bodyColor = useColorModeValue("gray.600", "whiteAlpha.760");
+  const headingColor = useColorModeValue("gray.900", "whiteAlpha.960");
+  const subtitleColor = useColorModeValue("gray.600", "whiteAlpha.820");
+  const bodyColor = useColorModeValue("gray.600", "whiteAlpha.740");
 
   return (
     <Container maxW="7xl" py={{ base: 16, md: 24 }}>
@@ -63,6 +64,7 @@ export function HeroSection({ onStartExploring }: HeroSectionProps) {
               fontSize={{ base: "4xl", md: "6xl" }}
               lineHeight={{ base: "1.05", md: "0.98" }}
               letterSpacing="-0.05em"
+              color={headingColor}
             >
               Rwanda Tour AI
             </Heading>

@@ -17,7 +17,8 @@ export function RecommendationSection({ onReady }: RecommendationSectionProps) {
   );
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const detailsRef = useRef<HTMLDivElement | null>(null);
-  const subtitleColor = useColorModeValue("gray.600", "whiteAlpha.700");
+  const titleColor = useColorModeValue("gray.900", "whiteAlpha.950");
+  const subtitleColor = useColorModeValue("gray.600", "whiteAlpha.720");
 
   useEffect(() => {
     onReady?.({
@@ -50,7 +51,9 @@ export function RecommendationSection({ onReady }: RecommendationSectionProps) {
       <Container ref={sectionRef} id="experiences" maxW="7xl" pb={{ base: 8, md: 10 }}>
         <SectionShell px={{ base: 5, md: 8 }} py={{ base: 6, md: 8 }} mb={8}>
           <Stack spacing={6}>
-            <Heading size="lg">Sample Experiences</Heading>
+            <Heading size="lg" color={titleColor}>
+              Sample Experiences
+            </Heading>
             <Text color={subtitleColor} maxW="2xl">
               Each card now previews real destination imagery and opens a richer experience view
               inline, keeping the MVP fast while making the section feel product-ready.

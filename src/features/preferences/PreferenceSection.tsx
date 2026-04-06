@@ -19,11 +19,13 @@ import { PreferenceSelector } from "./PreferenceSelector";
 
 export function PreferenceSection() {
   const { preferences, updatePreference } = usePreferenceState();
-  const subtitleColor = useColorModeValue("gray.600", "whiteAlpha.700");
-  const captionColor = useColorModeValue("gray.500", "whiteAlpha.600");
+  const titleColor = useColorModeValue("gray.900", "whiteAlpha.950");
+  const subtitleColor = useColorModeValue("gray.600", "whiteAlpha.720");
+  const captionColor = useColorModeValue("gray.500", "whiteAlpha.620");
   const activeChipBg = useColorModeValue("brand.50", "rgba(54,175,99,0.18)");
   const passiveChipBg = useColorModeValue("gray.100", "whiteAlpha.100");
   const chipTextColor = useColorModeValue("gray.800", "whiteAlpha.880");
+  const activeChipColor = useColorModeValue("brand.700", "brand.200");
 
   return (
     <Container maxW="7xl" pb={{ base: 14, md: 20 }}>
@@ -36,7 +38,7 @@ export function PreferenceSection() {
         <SectionShell px={{ base: 6, md: 8 }} py={{ base: 7, md: 8 }}>
           <Stack spacing={6}>
             <Box>
-              <Heading size="lg" mb={2}>
+              <Heading size="lg" mb={2} color={titleColor}>
                 Travel Preferences
               </Heading>
               <Text color={subtitleColor}>
@@ -72,7 +74,7 @@ export function PreferenceSection() {
                 </Text>
               </WrapItem>
               <WrapItem>
-                <Text px={3} py={1.5} rounded="full" bg={activeChipBg} color="brand.700" fontSize="sm">
+                <Text px={3} py={1.5} rounded="full" bg={activeChipBg} color={activeChipColor} fontSize="sm">
                   {preferences.experience}
                 </Text>
               </WrapItem>
