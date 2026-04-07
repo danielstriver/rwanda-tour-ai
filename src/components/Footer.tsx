@@ -1,5 +1,5 @@
-import { Box, Container, HStack, Link, Stack, Text, useColorModeValue } from "@chakra-ui/react";
-import { Github, MapPinned } from "lucide-react";
+import { Box, Container, HStack, Stack, Text, useColorModeValue } from "@chakra-ui/react";
+import { MapPinned } from "lucide-react";
 import { useLanguage } from "../hooks/useLanguage";
 
 export function Footer() {

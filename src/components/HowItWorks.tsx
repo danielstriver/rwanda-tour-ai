@@ -14,7 +14,7 @@ import {
   IconButton,
 } from "@chakra-ui/react";
 import { motion } from "framer-motion";
-import { Search, MessageSquare, Sparkles, X, Compass, Clock, Users, Bot } from "lucide-react";
+import { Search, Sparkles, X, Compass, Clock, Users, Bot } from "lucide-react";
 import { useLanguage } from "../hooks/useLanguage";
 import { MotionBox } from "./MotionBox";
 
@@ -99,27 +99,31 @@ export function HowItWorks({ onClose, onStartSearching }: HowItWorksProps) {
               {painPoints.map((point, i) => (
                 <MotionBox
                   key={i}
-                  p={8}
-                  bg={cardBg}
-                  rounded="2xl"
-                  borderWidth="1px"
-                  borderColor={borderColor}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.1 }}
                   viewport={{ once: true }}
                 >
-                  <VStack align="flex-start" spacing={4}>
-                    <Circle size="12" bg="rgba(0, 230, 138, 0.1)" color="brand.500">
-                      <Icon as={point.icon} boxSize={6} />
-                    </Circle>
-                    <Heading size="md" color={headingColor}>
-                      {point.title}
-                    </Heading>
-                    <Text color={textColor} textAlign="left">
-                      {point.desc}
-                    </Text>
-                  </VStack>
+                  <Box
+                    p={8}
+                    bg={cardBg}
+                    rounded="2xl"
+                    borderWidth="1px"
+                    borderColor={borderColor}
+                    h="100%"
+                  >
+                    <VStack align="flex-start" spacing={4}>
+                      <Circle size="12" bg="rgba(0, 230, 138, 0.1)" color="brand.500">
+                        <Icon as={point.icon} boxSize={6} />
+                      </Circle>
+                      <Heading size="md" color={headingColor}>
+                        {point.title}
+                      </Heading>
+                      <Text color={textColor} textAlign="left">
+                        {point.desc}
+                      </Text>
+                    </VStack>
+                  </Box>
                 </MotionBox>
               ))}
             </SimpleGrid>
@@ -167,41 +171,44 @@ export function HowItWorks({ onClose, onStartSearching }: HowItWorksProps) {
 
           {/* CTA Section */}
           <MotionBox
-            p={{ base: 8, md: 16 }}
-            bg="brand.500"
-            rounded="3xl"
-            textAlign="center"
             initial={{ scale: 0.95, opacity: 0 }}
             whileInView={{ scale: 1, opacity: 1 }}
             viewport={{ once: true }}
           >
-            <VStack spacing={8}>
-              <VStack spacing={4}>
-                <Circle size="16" bg="blackAlpha.200">
-                  <Bot size={32} color="black" />
-                </Circle>
-                <Heading size="2xl" color="black" letterSpacing="-0.03em">
-                  {t("how.cta.title")}
-                </Heading>
-                <Text fontSize="xl" color="blackAlpha.800" fontWeight="medium">
-                  {t("how.cta.subtitle")}
-                </Text>
+            <Box
+              p={{ base: 8, md: 16 }}
+              bg="brand.500"
+              rounded="3xl"
+              textAlign="center"
+            >
+              <VStack spacing={8}>
+                <VStack spacing={4}>
+                  <Circle size="16" bg="blackAlpha.200">
+                    <Bot size={32} color="black" />
+                  </Circle>
+                  <Heading size="2xl" color="black" letterSpacing="-0.03em">
+                    {t("how.cta.title")}
+                  </Heading>
+                  <Text fontSize="xl" color="blackAlpha.800" fontWeight="medium">
+                    {t("how.cta.subtitle")}
+                  </Text>
+                </VStack>
+                <Button
+                  size="lg"
+                  h="16"
+                  px="12"
+                  bg="white"
+                  color="black"
+                  rounded="full"
+                  fontSize="xl"
+                  _hover={{ bg: "gray.100", transform: "scale(1.05)" }}
+                  transition="all 0.2s"
+                  onClick={onStartSearching}
+                >
+                  {t("how.cta.button")}
+                </Button>
               </VStack>
-              <Button
-                size="lg"
-                h="16"
-                px="12"
-                bg="white"
-                color="black"
-                rounded="full"
-                fontSize="xl"
-                _hover={{ bg: "gray.100", transform: "scale(1.05)" }}
-                transition="all 0.2s"
-                onClick={onStartSearching}
-              >
-                {t("how.cta.button")}
-              </Button>
-            </VStack>
+            </Box>
           </MotionBox>
         </VStack>
       </Container>
