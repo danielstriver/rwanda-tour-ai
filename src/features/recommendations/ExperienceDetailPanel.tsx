@@ -23,11 +23,13 @@ import { ExperienceImageCarousel } from "./ExperienceImageCarousel";
 interface ExperienceDetailPanelProps {
   recommendation: Recommendation;
   onBackToExperiences: () => void;
+  onPlanExperience?: (title: string) => void;
 }
 
 export function ExperienceDetailPanel({
   recommendation,
   onBackToExperiences,
+  onPlanExperience,
 }: ExperienceDetailPanelProps) {
   const mutedText = "appMuted";
   const subtleText = "appMuted";
@@ -123,7 +125,7 @@ export function ExperienceDetailPanel({
               </Box>
 
               <HStack spacing={3} flexWrap="wrap">
-                <Button colorScheme="green" size="lg">
+                <Button colorScheme="green" size="lg" onClick={() => onPlanExperience?.(recommendation.title)}>
                   Plan This Experience
                 </Button>
                 <Button variant="ghost" size="lg" onClick={onBackToExperiences}>

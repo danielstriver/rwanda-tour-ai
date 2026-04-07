@@ -1,4 +1,4 @@
-import { Box, Button, Container, Heading, HStack, Stack, Text, Flex, Icon } from "@chakra-ui/react";
+import { Box, Button, Container, Heading, HStack, Stack, Text, Flex, Icon, useColorModeValue } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { Bot } from "lucide-react";
 
@@ -11,10 +11,10 @@ interface HeroSectionProps {
 
 export function HeroSection({ onStartExploring }: HeroSectionProps) {
   const { t } = useLanguage();
-  const eyebrowBg = "rgba(0, 230, 138, 0.1)";
+  const eyebrowBg = useColorModeValue("rgba(0, 230, 138, 0.1)", "rgba(0, 230, 138, 0.1)");
   const eyebrowColor = "brand.500";
-  const headingColor = "whiteAlpha.900";
-  const subtitleColor = "whiteAlpha.700";
+  const headingColor = useColorModeValue("gray.900", "whiteAlpha.900");
+  const subtitleColor = useColorModeValue("gray.600", "whiteAlpha.700");
 
   return (
     <Container maxW="7xl" py={{ base: 16, md: 32 }}>
@@ -25,7 +25,7 @@ export function HeroSection({ onStartExploring }: HeroSectionProps) {
       >
         <Flex
           direction={{ base: "column", lg: "row" }}
-          align="center"
+          align={{ base: "flex-start", lg: "center" }}
           justify="space-between"
           gap={{ base: 12, lg: 8 }}
         >
@@ -50,6 +50,7 @@ export function HeroSection({ onStartExploring }: HeroSectionProps) {
               lineHeight="1.1"
               letterSpacing="-0.03em"
               color={headingColor}
+              textAlign="left"
             >
               {t("hero.title.part1")}
               <Box as="span" color="brand.500">
@@ -57,7 +58,7 @@ export function HeroSection({ onStartExploring }: HeroSectionProps) {
               </Box>
             </Heading>
             
-            <Text fontSize={{ base: "lg", md: "xl" }} color={subtitleColor} maxW="xl" lineHeight="relaxed">
+            <Text fontSize={{ base: "lg", md: "xl" }} color={subtitleColor} maxW="xl" lineHeight="relaxed" textAlign="left">
               {t("hero.subtitle")}
             </Text>
             
@@ -76,10 +77,10 @@ export function HeroSection({ onStartExploring }: HeroSectionProps) {
               <Button
                 size="lg"
                 variant="outline"
-                borderColor="whiteAlpha.300"
-                color="whiteAlpha.900"
+                borderColor={useColorModeValue("gray.200", "whiteAlpha.300")}
+                color={useColorModeValue("gray.700", "whiteAlpha.900")}
                 px={8}
-                _hover={{ bg: "whiteAlpha.100" }}
+                _hover={{ bg: useColorModeValue("gray.50", "whiteAlpha.100") }}
               >
                 {t("hero.secondary_cta")}
               </Button>

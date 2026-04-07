@@ -10,9 +10,10 @@ import { useLanguage } from "../../hooks/useLanguage";
 
 interface RecommendationSectionProps {
   onReady?: (actions: { scrollToRecommendations: () => void }) => void;
+  onPlanExperience?: (title: string) => void;
 }
 
-export function RecommendationSection({ onReady }: RecommendationSectionProps) {
+export function RecommendationSection({ onReady, onPlanExperience }: RecommendationSectionProps) {
   const { t } = useLanguage();
   const [selectedRecommendation, setSelectedRecommendation] = useState<Recommendation>(
     SAMPLE_RECOMMENDATIONS[0],
@@ -78,6 +79,7 @@ export function RecommendationSection({ onReady }: RecommendationSectionProps) {
         <ExperienceDetailPanel
           recommendation={selectedRecommendation}
           onBackToExperiences={handleBackToExperiences}
+          onPlanExperience={onPlanExperience}
         />
       </Box>
     </>

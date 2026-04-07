@@ -67,6 +67,21 @@ export const translations: Translations = {
     fr: 'Pour découvrir la culture rwandaise, je recommande de visiter le Palais du Roi à Nyanza ou de faire un tour communautaire pour en savoir plus sur le tissage et la danse traditionnels.',
     rw: 'Kugira ngo umenye umuco w\'u Rwanda, ndagusaba gusura mu Rugwiro (Ingoro y\'Umwami) i Nyanza cyangwa gusura imiryango y\'abaturage ukiga kuboha no kubyina kinyarwanda.'
   },
+  'ai.response.plan': {
+    en: 'Here is an overview for your experience: **Estimated Budget:** $200 - $500. **Don\'t miss:** The local community interactions and the unique landscape photography spots!',
+    fr: 'Voici un aperçu de votre expérience : **Budget estimé :** 200 $ - 500 $. **À ne pas manquer :** Les interactions avec la communauté locale et les spots de photographie de paysage uniques !',
+    rw: 'Dore incamake y\'urugendo rwawe: **Ingengo y\'imari:** $200 - $500. **Ntuzicikwe na:** Gusabana n\'abaturage ndetse n\'amafoto meza y\'imisozi y\'u Rwanda!'
+  },
+  'ai.mic.listening': {
+    en: 'Listening...',
+    fr: 'Écoute...',
+    rw: 'Ndumva...'
+  },
+  'ai.mic.mock': {
+    en: 'I want to visit Volcanoes National Park',
+    fr: 'Je veux visiter le parc national des Volcans',
+    rw: 'Nshaka gusura pariki y\'ibirunga'
+  },
 
   // Preferences
   'pref.title': { en: 'Your Travel Preferences', fr: 'Vos préférences de voyage', rw: 'Ibyo Ukunda mu Rugendo' },

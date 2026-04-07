@@ -50,6 +50,12 @@ npm run build
 
 ## Recent Updates
 
+- ✅ Redesigned landing page and AI chat to match immersive "Evimi Bul" inspiration.
+- ✅ Implemented functional "Plan This Experience" integration with the AI assistant.
+- ✅ Enhanced light mode with adaptive color schemes for all components.
+- ✅ Added mocked voice interface with listening animations.
+- ✅ Improved chat history functionality with clickable recent searches.
+- ✅ Optimized typography and alignment for better readability.
 - ✅ Added AI Chat Assistant for personalized recommendations.
 - ✅ Implemented functional multilingual support (English, French, Kinyarwanda).
 - ✅ Integrated AI avatar and interactive chat flow.

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
   Box,
   VStack,
@@ -11,6 +11,7 @@ import {
   Spinner,
   Button,
   Heading,
+  useColorModeValue,
 } from '@chakra-ui/react';
 import { Send, Bot, Plus, Mic, ChevronLeft, LayoutGrid, Clock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -25,19 +26,26 @@ interface Message {
 interface AIChatSectionProps {
   onRecommendationReady: () => void;
   onGoHome?: () => void;
+  initialPrompt?: string;
 }
 
-export function AIChatSection({ onRecommendationReady, onGoHome }: AIChatSectionProps) {
+export function AIChatSection({ onRecommendationReady, onGoHome, initialPrompt }: AIChatSectionProps) {
   const { t } = useLanguage();
   const [messages, setMessages] = useState<Message[]>([]); // Start empty to show welcome
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [isListening, setIsListening] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const initialPromptProcessed = useRef(false);
 
-  const bgColor = 'rgba(255,255,255,0.05)';
+  const bgColor = useColorModeValue('rgba(0,0,0,0.05)', 'rgba(255,255,255,0.05)');
+  const sidebarBg = useColorModeValue('gray.50', '#070C12');
+  const mainBg = useColorModeValue('white', '#0A1118');
+  const headerBg = useColorModeValue('white', '#0A1118');
   const userMsgBg = 'brand.500';
-  const aiMsgBg = 'rgba(255,255,255,0.08)';
-  const textColor = 'whiteAlpha.900';
+  const aiMsgBg = useColorModeValue('gray.100', 'rgba(255,255,255,0.08)');
+  const textColor = useColorModeValue('gray.800', 'whiteAlpha.900');
+  const borderColor = useColorModeValue('gray.200', 'whiteAlpha.100');
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -47,7 +55,7 @@ export function AIChatSection({ onRecommendationReady, onGoHome }: AIChatSection
     scrollToBottom();
   }, [messages]);
 
-  const handleSend = (text: string = inputValue) => {
+  const handleSend = useCallback((text: string = inputValue) => {
     if (!text.trim()) return;
 
     const userMessage: Message = {
@@ -64,7 +72,9 @@ export function AIChatSection({ onRecommendationReady, onGoHome }: AIChatSection
     const lowercaseText = text.toLowerCase();
     let responseKey = 'ai.response.default';
 
-    if (lowercaseText.includes('kigali') || lowercaseText.includes('city') || lowercaseText.includes('market')) {
+    if (lowercaseText.includes('plan') || lowercaseText.includes('itinerary')) {
+      responseKey = 'ai.response.plan';
+    } else if (lowercaseText.includes('kigali') || lowercaseText.includes('city') || lowercaseText.includes('market')) {
       responseKey = 'ai.response.kigali';
     } else if (lowercaseText.includes('volcano') || lowercaseText.includes('gorilla') || lowercaseText.includes('mountain')) {
       responseKey = 'ai.response.volcanoes';
@@ -93,6 +103,21 @@ export function AIChatSection({ onRecommendationReady, onGoHome }: AIChatSection
         onRecommendationReady();
       }, 1000);
     }, 1500);
+  }, [inputValue, t, onRecommendationReady]);
+
+  useEffect(() => {
+    if (initialPrompt && !initialPromptProcessed.current) {
+      initialPromptProcessed.current = true;
+      handleSend(initialPrompt);
+    }
+  }, [initialPrompt, handleSend]);
+
+  const handleMicClick = () => {
+    setIsListening(true);
+    setTimeout(() => {
+      setIsListening(false);
+      handleSend(t('ai.mic.mock'));
+    }, 3000);
   };
 
   return (
@@ -102,8 +127,8 @@ export function AIChatSection({ onRecommendationReady, onGoHome }: AIChatSection
         w={{ base: "0", md: "280px" }}
         display={{ base: "none", md: "block" }}
         borderRightWidth="1px"
-        borderColor="whiteAlpha.100"
-        bg="#070C12"
+        borderColor={borderColor}
+        bg={sidebarBg}
         p={4}
       >
         <Button
@@ -121,14 +146,14 @@ export function AIChatSection({ onRecommendationReady, onGoHome }: AIChatSection
         </Button>
 
         <VStack align="stretch" spacing={4}>
-          <Text fontSize="xs" fontWeight="bold" color="whiteAlpha.500" textTransform="uppercase" letterSpacing="widest">
+          <Text fontSize="xs" fontWeight="bold" color="appMuted" textTransform="uppercase" letterSpacing="widest">
             Recent Searches
           </Text>
-          <HStack color="whiteAlpha.700" _hover={{ color: "brand.500", cursor: "pointer" }} p={2} rounded="md">
+          <HStack color="appMuted" _hover={{ color: "brand.500", cursor: "pointer" }} p={2} rounded="md" onClick={() => handleSend("Lake Kivu, relaxed pace")}>
             <Clock size={16} />
             <Text fontSize="sm" noOfLines={1}>Lake Kivu, relaxed pace</Text>
           </HStack>
-          <HStack color="whiteAlpha.700" _hover={{ color: "brand.500", cursor: "pointer" }} p={2} rounded="md">
+          <HStack color="appMuted" _hover={{ color: "brand.500", cursor: "pointer" }} p={2} rounded="md" onClick={() => handleSend("Gorilla trekking budget")}>
             <Clock size={16} />
             <Text fontSize="sm" noOfLines={1}>Gorilla trekking budget</Text>
           </HStack>
@@ -136,10 +161,10 @@ export function AIChatSection({ onRecommendationReady, onGoHome }: AIChatSection
       </Box>
 
       {/* Main Chat Area */}
-      <Flex flex={1} direction="column" position="relative" bg="#0A1118">
+      <Flex flex={1} direction="column" position="relative" bg={mainBg}>
         {/* Header */}
-        <Flex justify="space-between" align="center" p={4} borderBottomWidth="1px" borderColor="whiteAlpha.100">
-          <HStack color="whiteAlpha.600" cursor="pointer" _hover={{ color: "white" }} onClick={onGoHome}>
+        <Flex justify="space-between" align="center" p={4} borderBottomWidth="1px" borderColor={borderColor} bg={headerBg}>
+          <HStack color="appMuted" cursor="pointer" _hover={{ color: "brand.500" }} onClick={onGoHome}>
             <ChevronLeft size={18} />
             <Text fontSize="sm">Home</Text>
             <Box ml={2} display="inline-flex"><LayoutGrid size={18} /></Box>
@@ -149,7 +174,7 @@ export function AIChatSection({ onRecommendationReady, onGoHome }: AIChatSection
             <Avatar icon={<Bot size={18} />} boxSize={8} bg="brand.500" color="black" />
             <Box>
               <Text fontWeight="bold" fontSize="sm" lineHeight="1">Rwanda Tour AI</Text>
-              <Text fontSize="xs" color="whiteAlpha.500">Travel Assistant</Text>
+              <Text fontSize="xs" color="appMuted">Travel Assistant</Text>
             </Box>
           </HStack>
         </Flex>
@@ -158,45 +183,56 @@ export function AIChatSection({ onRecommendationReady, onGoHome }: AIChatSection
         <Box flex={1} overflowY="auto" px={{ base: 4, md: 8 }} py={8}>
           {messages.length === 0 ? (
             <Flex direction="column" align="center" justify="center" h="100%" textAlign="center">
-              <Heading size="2xl" mb={4}>Welcome back!</Heading>
-              <Text color="whiteAlpha.600" mb={12}>Pick up where you left off with your recent searches or start a new one.</Text>
-              
-              <Box mb={8} position="relative">
-                <Box
-                  position="absolute"
-                  top="50%"
-                  left="50%"
-                  transform="translate(-50%, -50%)"
-                  w="120px"
-                  h="120px"
-                  bg="brand.500"
-                  opacity={0.15}
-                  rounded="full"
-                  filter="blur(20px)"
-                />
-                <IconButton
-                  aria-label="Voice input"
-                  icon={<Mic size={32} />}
-                  boxSize="80px"
-                  rounded="full"
-                  bg="brand.500"
-                  color="black"
-                  _hover={{ bg: "brand.400", transform: "scale(1.05)" }}
-                  transition="all 0.2s"
-                  boxShadow="0 0 30px rgba(0,230,138,0.4)"
-                  onClick={() => alert("Voice input mocked")}
-                />
-              </Box>
-              <Text color="brand.500" mb={8} fontSize="sm">Click the mic, tell me — I'll find it</Text>
+              <VStack spacing={6} maxW="md">
+                <Heading size="2xl" mb={4}>Welcome back!</Heading>
+                <Text color="appMuted" mb={4}>Pick up where you left off with your recent searches or start a new one.</Text>
+                
+                <Box mb={4} position="relative">
+                  {isListening && (
+                    <motion.div
+                      style={{
+                        position: "absolute",
+                        top: "50%",
+                        left: "50%",
+                        transform: "translate(-50%, -50%)",
+                        width: "120px",
+                        height: "120px",
+                        backgroundColor: "#00E68A",
+                        borderRadius: "50%",
+                        zIndex: 0,
+                      }}
+                      animate={{ scale: [1, 1.5, 1], opacity: [0.3, 0.1, 0.3] }}
+                      transition={{ duration: 1.5, repeat: Infinity }}
+                    />
+                  )}
+                  <IconButton
+                    aria-label="Voice input"
+                    icon={isListening ? <Spinner size="lg" /> : <Mic size={32} />}
+                    boxSize="80px"
+                    rounded="full"
+                    bg="brand.500"
+                    color="black"
+                    _hover={{ bg: "brand.400", transform: "scale(1.05)" }}
+                    transition="all 0.2s"
+                    boxShadow="0 0 30px rgba(0,230,138,0.4)"
+                    onClick={handleMicClick}
+                    zIndex={1}
+                    position="relative"
+                  />
+                </Box>
+                <Text color="brand.500" mb={4} fontSize="sm" fontWeight="medium">
+                  {isListening ? t('ai.mic.listening') : "Click the mic, tell me — I'll find it"}
+                </Text>
 
-              <HStack spacing={4} justify="center" flexWrap="wrap">
-                <Button variant="outline" borderColor="whiteAlpha.200" rounded="full" fontWeight="normal" onClick={() => handleSend("I want a 3-day luxury tour in Akagera")}>
-                  3-day luxury in Akagera
-                </Button>
-                <Button variant="outline" borderColor="whiteAlpha.200" rounded="full" fontWeight="normal" onClick={() => handleSend("Budget-friendly places in Kigali")}>
-                  Budget-friendly in Kigali
-                </Button>
-              </HStack>
+                <HStack spacing={4} justify="center" flexWrap="wrap">
+                  <Button variant="outline" borderColor={borderColor} rounded="full" fontWeight="normal" onClick={() => handleSend("I want a 3-day luxury tour in Akagera")}>
+                    3-day luxury in Akagera
+                  </Button>
+                  <Button variant="outline" borderColor={borderColor} rounded="full" fontWeight="normal" onClick={() => handleSend("Budget-friendly places in Kigali")}>
+                    Budget-friendly in Kigali
+                  </Button>
+                </HStack>
+              </VStack>
             </Flex>
           ) : (
             <VStack spacing={6} align="stretch" maxW="4xl" mx="auto">
@@ -230,7 +266,7 @@ export function AIChatSection({ onRecommendationReady, onGoHome }: AIChatSection
               {isTyping && (
                 <HStack spacing={2} p={2}>
                   <Spinner size="xs" color="brand.500" />
-                  <Text fontSize="xs" color="whiteAlpha.600">{t('ai.thinking')}</Text>
+                  <Text fontSize="xs" color="appMuted">{t('ai.thinking')}</Text>
                 </HStack>
               )}
               <div ref={messagesEndRef} />
@@ -240,13 +276,14 @@ export function AIChatSection({ onRecommendationReady, onGoHome }: AIChatSection
 
         {/* Input Area */}
         <Box p={4} maxW="4xl" w="100%" mx="auto">
-          <HStack spacing={2} bg={bgColor} rounded="2xl" p={2} borderWidth="1px" borderColor="whiteAlpha.200">
+          <HStack spacing={2} bg={bgColor} rounded="2xl" p={2} borderWidth="1px" borderColor={borderColor}>
             <IconButton
               aria-label="Voice input"
               icon={<Mic size={20} />}
               variant="ghost"
-              color="whiteAlpha.700"
+              color="appMuted"
               _hover={{ color: "brand.500", bg: "transparent" }}
+              onClick={handleMicClick}
             />
             <Input
               placeholder="What kind of experience are you looking for? Tell me..."
@@ -255,13 +292,13 @@ export function AIChatSection({ onRecommendationReady, onGoHome }: AIChatSection
               onKeyPress={(e) => e.key === 'Enter' && handleSend()}
               border="none"
               _focus={{ boxShadow: 'none' }}
-              color="white"
+              color={textColor}
             />
             <IconButton
               aria-label="Send message"
               icon={<Send size={20} />}
               bg={inputValue.trim() ? "brand.500" : "transparent"}
-              color={inputValue.trim() ? "black" : "whiteAlpha.400"}
+              color={inputValue.trim() ? "black" : "appMuted"}
               rounded="xl"
               onClick={() => handleSend()}
               isDisabled={!inputValue.trim()}
