@@ -32,17 +32,6 @@ export function Footer() {
             <Text fontSize="sm" color={bodyColor}>
               {t("footer.copyright")}
             </Text>
-            <Link
-              href="https://github.com/danielstriver/rwanda-tour-ai"
-              isExternal
-              display="inline-flex"
-              alignItems="center"
-              gap={2}
-              color={linkColor}
-              aria-label="GitHub Repository"
-            >
-              <Github size={18} />
-            </Link>
           </HStack>
         </Stack>
       </Container>

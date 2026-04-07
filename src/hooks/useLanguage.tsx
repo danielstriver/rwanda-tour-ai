@@ -10,7 +10,7 @@ interface Translations {
 
 export const translations: Translations = {
   // Navbar
-  'nav.title': { en: 'Rwanda Tour AI', fr: 'Rwanda Tour AI', rw: 'Rwanda Tour AI' },
+  'nav.title': { en: 'Rwanda Tourist Assistant', fr: 'Rwanda Tourist Assistant', rw: 'Rwanda Tourist Assistant' },
   'nav.subtitle': { en: 'Smart tourism discovery', fr: 'Découverte touristique intelligente', rw: 'Uvumbuzi bw’ubukerarugendo bwubatswe kuri AI' },
   'nav.lang.en': { en: 'English', fr: 'Anglais', rw: 'Icyongereza' },
   'nav.lang.fr': { en: 'French', fr: 'Français', rw: 'Igifaransa' },
@@ -93,8 +93,30 @@ export const translations: Translations = {
   'rec.title': { en: 'Curated Recommendations', fr: 'Recommandations organisées', rw: 'Ibyo Twaguhitiyemo' },
   'rec.view_details': { en: 'View Details', fr: 'Voir les détails', rw: 'Reba amakuru arambuye' },
   
+  // How It Works
+  'how.pain1.title': { en: 'Research Fatigue', fr: 'Fatigue de recherche', rw: 'Umunaniro wo gushakashaka' },
+  'how.pain1.desc': { en: 'Hours spent jumping between blogs, travel sites, and reviews. Your eyes hurt, still no plan.', fr: 'Des heures passées à sauter entre les blogs, les sites de voyage et les avis. Vos yeux font mal, toujours pas de plan.', rw: 'Amasaha menshi yakoreshejwe mu gusoma amablogu, imbuga z’ubukerarugendo, n’ibitekerezo by’abandi. Amaso akurya, ariko nta gahunda ufite.' },
+  'how.pain2.title': { en: 'Lost Hours', fr: 'Heures perdues', rw: 'Amasaha atakaye' },
+  'how.pain2.desc': { en: 'Planning should be part of the fun, but it often feels like a second job.', fr: 'La planification devrait faire partie du plaisir, mais elle ressemble souvent à un deuxième travail.', rw: 'Gupanga urugendo byagombye kuba bishimishije, ariko akenshi birushya nk’akazi.' },
+  'how.pain3.title': { en: "Nobody's listening", fr: 'Personne n\'écoute', rw: 'Nta muntu utega amatwi' },
+  'how.pain3.desc': { en: "Standard filters don't understand that 'the kids need to be near a playground' or 'I need a quiet spot for morning yoga'.", fr: 'Les filtres standard ne comprennent pas que "les enfants ont besoin d\'être près d\'un terrain de jeux" ou "j\'ai besoin d\'un endroit calme pour le yoga du matin".', rw: 'Uburyo busanzwe bwo gushaka ntibwumva ko "abana bakeneye kuba hafi y’aho bakinira" cyangwa ko "nkeneye ahantu hatuje ho gukorera yoga mu gitondo".' },
+  'how.intro.title': { en: "Travel planning shouldn't be exhausting.", fr: 'La planification de voyage ne devrait pas être épuisante.', rw: 'Gupanga urugendo ntibyagombye kukuvuna.' },
+  'how.intro.subtitle': { en: 'But it is. We all know it.', fr: 'Mais ça l\'est. Nous le savons tous.', rw: 'Ariko riravuna. Twese turabizi.' },
+  'how.solution.title.part1': { en: 'What if you could plan a trip ', fr: 'Et si vous pouviez planifier un voyage ', rw: 'Bimeze bite uramutse upanze urugendo ' },
+  'how.solution.title.part2': { en: 'like talking to a friend?', fr: 'comme si vous parliez à un ami ?', rw: 'nk’aho uvugana n’inshuti?' },
+  'how.solution.subtitle': { en: "That's exactly what Rwanda Tourist Assistant does. Tell us what you need. Type it, say it, however you like.", fr: 'C\'est exactement ce que fait Rwanda Tourist Assistant. Dites-nous ce dont vous avez besoin. Tapez-le, dites-le, comme vous le souhaitez.', rw: 'Icyo ni cyo Rwanda Tourist Assistant ikora. Tubwire icyo ukeneye. Andika, vuga, mu buryo bwose ukunda.' },
+  'how.step1.title': { en: 'Tell us', fr: 'Dites-nous', rw: 'Tubwire' },
+  'how.step1.desc': { en: '"3 days in Akagera, budget-friendly, focused on photography." That\'s it. We\'ll take it from here.', fr: '"3 jours à l\'Akagera, économique, axé sur la photographie." C\'est tout. Nous prenons le relais.', rw: '"Iminsi 3 muri Akagera, ihendutse, nshaka gufata amafoto." Ngicyo. Twe turakomeza.' },
+  'how.step2.title': { en: 'We search', fr: 'Nous cherchons', rw: 'Turashaka' },
+  'how.step2.desc': { en: 'We scan thousands of curated experiences and local insights across Rwanda for you.', fr: 'Nous parcourons des milliers d\'expériences organisées et d\'aperçus locaux à travers le Rwanda pour vous.', rw: 'Tureba mu bihumbi by’uburambe bwateguwe n’amakuru y’imbere mu Rwanda ku bwawe.' },
+  'how.step3.title': { en: 'Refine together', fr: 'Affiner ensemble', rw: 'Kunononsora hamwe' },
+  'how.step3.desc': { en: '"Anything more adventurous?" "With better views?" The more you talk, the sharper the results.', fr: '"Quelque chose de plus aventureux ?" "Avec de meilleures vues ?" Plus vous parlez, plus les résultats sont précis.', rw: '"Haba hari ibirimo akaga kurushaho?" "Haba hari ahantu habona neza kurushaho?" Uko uvuga cyane, ni ko tubona ibyo ushaka neza.' },
+  'how.cta.title': { en: 'Your journey is out there, waiting.', fr: 'Votre voyage est là-bas, il vous attend.', rw: 'Urugendo rwawe rurategereje.' },
+  'how.cta.subtitle': { en: "Let's find it together. Free, fast, human.", fr: 'Trouvons-le ensemble. Gratuit, rapide, humain.', rw: 'Tubishakire ham more. Ni ubuntu, birihuta, ni nk’umuntu.' },
+  'how.cta.button': { en: "Let's Go", fr: 'C\'est parti', rw: 'Twagiye' },
+
   // Footer
-  'footer.copyright': { en: '© 2026 Rwanda Tour AI. All rights reserved.', fr: '© 2026 Rwanda Tour AI. Tous droits réservés.', rw: '© 2026 Rwanda Tour AI. Uburenganzira bwose burasubitswe.' },
+  'footer.copyright': { en: '© 2026 Rwanda Tourist Assistant. All rights reserved.', fr: '© 2026 Rwanda Tourist Assistant. Tous droits réservés.', rw: '© 2026 Rwanda Tourist Assistant. Uburenganzira bwose burasubitswe.' },
 };
 
 interface LanguageContextType {

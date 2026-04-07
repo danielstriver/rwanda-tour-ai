@@ -1,6 +1,6 @@
-# Rwanda Tour AI
+# Rwanda Tourist Assistant
 
-Rwanda Tour AI is an AI-powered tourism recommendation platform for Rwanda. It provides a polished landing experience, interactive AI-driven discovery, and curated recommendations.
+Rwanda Tourist Assistant is an AI-powered tourism recommendation platform for Rwanda. It provides a polished landing experience, interactive AI-driven discovery, and curated recommendations.
 
 ## Features
 
@@ -50,6 +50,8 @@ npm run build
 
 ## Recent Updates
 
+- ✅ Updated site branding to "Rwanda Tourist Assistant".
+- ✅ Implemented functional "How It Works" guide with problem/solution visualization.
 - ✅ Redesigned landing page and AI chat to match immersive "Evimi Bul" inspiration.
 - ✅ Implemented functional "Plan This Experience" integration with the AI assistant.
 - ✅ Enhanced light mode with adaptive color schemes for all components.

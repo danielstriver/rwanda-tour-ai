@@ -1,6 +1,6 @@
-# Rwanda Tour AI - Project Context
+# Rwanda Tourist Assistant - Project Context
 
-Rwanda Tour AI is a UI-first MVP prototype of an AI-powered tourism recommendation platform for Rwanda. It provides a polished landing experience, preference selection flow, and static recommendation cards, serving as a foundation for future AI integrations.
+Rwanda Tourist Assistant is a UI-first MVP prototype of an AI-powered tourism recommendation platform for Rwanda. It provides a polished landing experience, preference selection flow, and static recommendation cards, serving as a foundation for future AI integrations.
 
 ## Project Overview
 

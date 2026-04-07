@@ -173,7 +173,7 @@ export function AIChatSection({ onRecommendationReady, onGoHome, initialPrompt }
           <HStack>
             <Avatar icon={<Bot size={18} />} boxSize={8} bg="brand.500" color="black" />
             <Box>
-              <Text fontWeight="bold" fontSize="sm" lineHeight="1">Rwanda Tour AI</Text>
+              <Text fontWeight="bold" fontSize="sm" lineHeight="1">Rwanda Tourist Assistant</Text>
               <Text fontSize="xs" color="appMuted">Travel Assistant</Text>
             </Box>
           </HStack>

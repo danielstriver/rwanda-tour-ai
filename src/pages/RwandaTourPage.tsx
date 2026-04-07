@@ -8,9 +8,11 @@ import { Navbar } from "../components/Navbar";
 import { PreferenceSection } from "../features/preferences/PreferenceSection";
 import { RecommendationSection } from "../features/recommendations/RecommendationSection";
 import { AIChatSection } from "../features/ai/AIChatSection";
+import { HowItWorks } from "../components/HowItWorks";
 
 export function RwandaTourPage() {
   const [isExploring, setIsExploring] = useState(false);
+  const [isHowItWorks, setIsHowItWorks] = useState(false);
   const [initialPrompt, setInitialPrompt] = useState("");
   const recommendationActionsRef = useRef<{ scrollToRecommendations: () => void } | null>(null);
   const background = useColorModeValue(
@@ -27,12 +29,20 @@ export function RwandaTourPage() {
 
   const handleStartExploring = useCallback(() => {
     setIsExploring(true);
+    setIsHowItWorks(false);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
+
+  const handleHowItWorks = useCallback(() => {
+    setIsHowItWorks(true);
+    setIsExploring(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
   const handlePlanExperience = useCallback((title: string) => {
     setInitialPrompt(`I want to plan an itinerary for ${title}`);
     setIsExploring(true);
+    setIsHowItWorks(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
@@ -46,9 +56,22 @@ export function RwandaTourPage() {
       bgImage={background}
       transition="background 0.3s ease"
     >
-      {!isExploring && <Navbar />}
+      {!isExploring && !isHowItWorks && <Navbar />}
       <AnimatePresence mode="wait">
-        {!isExploring ? (
+        {isHowItWorks ? (
+          <motion.div
+            key="how-it-works"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.4 }}
+          >
+            <HowItWorks 
+              onClose={() => setIsHowItWorks(false)} 
+              onStartSearching={handleStartExploring}
+            />
+          </motion.div>
+        ) : !isExploring ? (
           <motion.div
             key="landing"
             initial={{ opacity: 0, y: 20 }}
@@ -56,7 +79,10 @@ export function RwandaTourPage() {
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.4 }}
           >
-            <HeroSection onStartExploring={handleStartExploring} />
+            <HeroSection 
+              onStartExploring={handleStartExploring} 
+              onHowItWorks={handleHowItWorks}
+            />
             <PreferenceSection />
             <RecommendationSection onReady={handleRecommendationsReady} onPlanExperience={handlePlanExperience} />
           </motion.div>
@@ -83,7 +109,7 @@ export function RwandaTourPage() {
           </motion.div>
         )}
       </AnimatePresence>
-      {!isExploring && <Footer />}
+      {!isExploring && !isHowItWorks && <Footer />}
     </Box>
   );
 }

@@ -7,9 +7,10 @@ import { useLanguage } from "../hooks/useLanguage";
 
 interface HeroSectionProps {
   onStartExploring: () => void;
+  onHowItWorks: () => void;
 }
 
-export function HeroSection({ onStartExploring }: HeroSectionProps) {
+export function HeroSection({ onStartExploring, onHowItWorks }: HeroSectionProps) {
   const { t } = useLanguage();
   const eyebrowBg = useColorModeValue("rgba(0, 230, 138, 0.1)", "rgba(0, 230, 138, 0.1)");
   const eyebrowColor = "brand.500";
@@ -81,6 +82,7 @@ export function HeroSection({ onStartExploring }: HeroSectionProps) {
                 color={useColorModeValue("gray.700", "whiteAlpha.900")}
                 px={8}
                 _hover={{ bg: useColorModeValue("gray.50", "whiteAlpha.100") }}
+                onClick={onHowItWorks}
               >
                 {t("hero.secondary_cta")}
               </Button>
