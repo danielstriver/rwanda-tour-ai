@@ -19,11 +19,13 @@ export const translations: Translations = {
   'nav.theme.light': { en: 'Light', fr: 'Clair', rw: 'Umucyo' },
 
   // Hero
-  'hero.eyebrow': { en: 'AI-powered travel inspiration for Rwanda', fr: 'Inspiration de voyage propulsée par l\'IA pour le Rwanda', rw: 'Inama z\'ubukerarugendo mu Rwanda zishingiye kuri AI' },
-  'hero.title': { en: 'Rwanda Tour AI', fr: 'Rwanda Tour AI', rw: 'Rwanda Tour AI' },
-  'hero.subtitle': { en: 'Discover Rwanda Your Way', fr: 'Découvrez le Rwanda à votre façon', rw: 'Vumbura u Rwanda mu buryo bwawe' },
+  'hero.eyebrow': { en: 'We rethought travel search', fr: 'Nous avons repensé la recherche de voyage', rw: 'Twashatse uburyo bushya bwo gushaka ingendo' },
+  'hero.title.part1': { en: 'Just tell us, ', fr: 'Dites-nous simplement, ', rw: 'Tubwire gusa, ' },
+  'hero.title.part2': { en: "we'll find it.", fr: 'nous le trouverons.', rw: 'tuzabishaka.' },
+  'hero.subtitle': { en: 'Skip the filters. Say what you need, type or talk. We\'ll search thousands of experiences across Rwanda for you.', fr: 'Oubliez les filtres. Dites ce dont vous avez besoin, tapez ou parlez. Nous chercherons des milliers d\'expériences à travers le Rwanda pour vous.', rw: 'Reka gukoresha akayunguruzo. Vuga icyo ukeneye, andika cyangwa uvuge. Tuzagushakira amagana y\'uburambe mu Rwanda.' },
   'hero.body': { en: 'Start with your travel style, budget, and duration to preview curated experiences across Rwanda.', fr: 'Commencez par votre style de voyage, votre budget et votre durée pour prévisualiser des expériences organisées à travers le Rwanda.', rw: 'Tangira n\'uburyo ukunda gukora ingendo, ingengo y\'imari, n\'igihe uzamara kugira ngo urebe uburyo bwateguwe bwo gusura u Rwanda.' },
-  'hero.cta': { en: 'Start Exploring', fr: 'Commencer l\'exploration', rw: 'Tangira Gusura' },
+  'hero.cta': { en: 'Start Searching', fr: 'Commencer la recherche', rw: 'Tangira Gushaka' },
+  'hero.secondary_cta': { en: 'How It Works?', fr: 'Comment ça marche ?', rw: 'Bikora bite?' },
 
   // AI Section
   'ai.title': { en: 'How can I help you today?', fr: 'Comment puis-je vous aider aujourd\'hui ?', rw: 'Nshobora kugufasha nte uyu munsi?' },

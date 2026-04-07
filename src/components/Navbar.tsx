@@ -55,7 +55,7 @@ export function Navbar() {
               boxSize={10}
               rounded="2xl"
               bg="brand.500"
-              color="white"
+              color="black"
               fontWeight="bold"
               boxShadow="lg"
             >

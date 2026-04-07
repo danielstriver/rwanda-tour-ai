@@ -7,12 +7,12 @@ import { LanguageProvider } from "./hooks/useLanguage";
 
 const theme = extendTheme({
   config: {
-    initialColorMode: "light",
+    initialColorMode: "dark",
     useSystemColorMode: false,
   },
   fonts: {
-    heading: "'Segoe UI', sans-serif",
-    body: "'Segoe UI', sans-serif",
+    heading: "'Inter', 'Segoe UI', sans-serif",
+    body: "'Inter', 'Segoe UI', sans-serif",
   },
   styles: {
     global: {
@@ -79,7 +79,7 @@ const theme = extendTheme({
       },
       appMuted: {
         default: "gray.600",
-        _dark: "whiteAlpha.720",
+        _dark: "whiteAlpha.700",
       },
       appSurface: {
         default: "rgba(255,255,255,0.72)",
@@ -89,16 +89,16 @@ const theme = extendTheme({
   },
   colors: {
     brand: {
-      50: "#eefbf4",
-      100: "#d5f2df",
-      200: "#b0e6c1",
-      300: "#85d89f",
-      400: "#58c77d",
-      500: "#36af63",
-      600: "#25894c",
-      700: "#1e6b3d",
-      800: "#1a5431",
-      900: "#153f26"
+      50: "#e6fff4",
+      100: "#b3ffe1",
+      200: "#80ffce",
+      300: "#4dffbb",
+      400: "#1affa8",
+      500: "#00E68A", // Vibrant green matching Evimi Bul
+      600: "#00b36b",
+      700: "#00804d",
+      800: "#004d2e",
+      900: "#001a0f"
     }
   }
 });

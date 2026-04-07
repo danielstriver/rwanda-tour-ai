@@ -13,8 +13,8 @@ export function RwandaTourPage() {
   const [isExploring, setIsExploring] = useState(false);
   const recommendationActionsRef = useRef<{ scrollToRecommendations: () => void } | null>(null);
   const background = useColorModeValue(
-    "radial-gradient(circle at top left, rgba(54,175,99,0.12), rgba(54,175,99,0) 28%), linear-gradient(135deg, #f5f8f3 0%, #edf5ef 42%, #ffffff 100%)",
-    "radial-gradient(circle at top left, rgba(54,175,99,0.16), rgba(54,175,99,0) 28%), radial-gradient(circle at 82% 12%, rgba(56,161,105,0.12), rgba(56,161,105,0) 24%), linear-gradient(180deg, #04090d 0%, #091118 42%, #0d1822 100%)",
+    "linear-gradient(135deg, #f5f8f3 0%, #edf5ef 42%, #ffffff 100%)",
+    "linear-gradient(180deg, #0A1118 0%, #060B10 100%)",
   );
 
   const handleRecommendationsReady = useCallback(
@@ -39,7 +39,7 @@ export function RwandaTourPage() {
       bgImage={background}
       transition="background 0.3s ease"
     >
-      <Navbar />
+      {!isExploring && <Navbar />}
       <AnimatePresence mode="wait">
         {!isExploring ? (
           <motion.div
@@ -60,14 +60,16 @@ export function RwandaTourPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
           >
-            <Box minH="calc(100vh - 80px)" display="flex" flexDirection="column" pt={8} pb={12}>
-              <AIChatSection onRecommendationReady={handleAIRecommendationReady} />
-              <RecommendationSection onReady={handleRecommendationsReady} />
+            <Box minH="100vh" display="flex" flexDirection="column">
+              <AIChatSection onRecommendationReady={handleAIRecommendationReady} onGoHome={() => setIsExploring(false)} />
+              <Box px={{ base: 4, md: 8 }} pb={12}>
+                <RecommendationSection onReady={handleRecommendationsReady} />
+              </Box>
             </Box>
           </motion.div>
         )}
       </AnimatePresence>
-      <Footer />
+      {!isExploring && <Footer />}
     </Box>
   );
 }
