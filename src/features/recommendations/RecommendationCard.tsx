@@ -14,6 +14,7 @@ import { MotionBox } from "../../components/MotionBox";
 import { SectionShell } from "../../components/SectionShell";
 import type { Recommendation } from "../../types/recommendation";
 import { ExperienceImageCarousel } from "./ExperienceImageCarousel";
+import { useLanguage } from "../../hooks/useLanguage";
 
 interface RecommendationCardProps {
   recommendation: Recommendation;
@@ -26,6 +27,7 @@ export function RecommendationCard({
   index,
   onViewExperience,
 }: RecommendationCardProps) {
+  const { t } = useLanguage();
   const titleColor = "appHeading";
   const bodyColor = "appMuted";
   const priceColor = useColorModeValue("brand.600", "brand.300");
@@ -93,7 +95,7 @@ export function RecommendationCard({
               borderColor: "brand.500",
             }}
           >
-            View Experience
+            {t("rec.view_details")}
           </Button>
         </Stack>
       </SectionShell>

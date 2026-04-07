@@ -4,12 +4,14 @@ import { ArrowRight, Compass, Sparkles } from "lucide-react";
 
 import { MotionBox } from "./MotionBox";
 import { SectionShell } from "./SectionShell";
+import { useLanguage } from "../hooks/useLanguage";
 
 interface HeroSectionProps {
   onStartExploring: () => void;
 }
 
 export function HeroSection({ onStartExploring }: HeroSectionProps) {
+  const { t } = useLanguage();
   const eyebrowBg = useColorModeValue("rgba(255,255,255,0.72)", "rgba(255,255,255,0.08)");
   const eyebrowColor = useColorModeValue("brand.700", "brand.200");
   const headingColor = "appHeading";
@@ -58,7 +60,7 @@ export function HeroSection({ onStartExploring }: HeroSectionProps) {
               borderColor="whiteAlpha.200"
             >
               <Sparkles size={16} />
-              <Text>AI-powered travel inspiration for Rwanda</Text>
+              <Text>{t("hero.eyebrow")}</Text>
             </HStack>
             <Heading
               fontSize={{ base: "4xl", md: "6xl" }}
@@ -66,14 +68,13 @@ export function HeroSection({ onStartExploring }: HeroSectionProps) {
               letterSpacing="-0.05em"
               color={headingColor}
             >
-              Rwanda Tour AI
+              {t("hero.title")}
             </Heading>
             <Text fontSize={{ base: "lg", md: "2xl" }} color={subtitleColor} maxW="2xl">
-              Discover Rwanda Your Way
+              {t("hero.subtitle")}
             </Text>
             <Text fontSize={{ base: "md", md: "lg" }} color={bodyColor} maxW="3xl">
-              Start with your travel style, budget, and duration to preview curated experiences
-              across Rwanda. This MVP now flows directly into the featured destinations section.
+              {t("hero.body")}
             </Text>
             <Button
               alignSelf="flex-start"
@@ -83,7 +84,7 @@ export function HeroSection({ onStartExploring }: HeroSectionProps) {
               leftIcon={<Compass size={18} />}
               onClick={onStartExploring}
             >
-              Start Exploring
+              {t("hero.cta")}
             </Button>
           </Stack>
         </SectionShell>

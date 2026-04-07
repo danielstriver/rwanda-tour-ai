@@ -1,38 +1,38 @@
 # Rwanda Tour AI
 
-Rwanda Tour AI is the first MVP prototype of an AI-powered tourism recommendation platform focused on Rwanda. This version is intentionally UI-first: it delivers a polished landing experience, preference selection flow, and static recommendation cards that future AI features can build on safely.
+Rwanda Tour AI is an AI-powered tourism recommendation platform for Rwanda. It provides a polished landing experience, interactive AI-driven discovery, and curated recommendations.
 
 ## Features
 
-- Responsive landing page with hero, navigation, preferences, recommendations, and footer
-- Preference selectors for experience type, budget, and trip duration
-- Static recommendation cards for Volcanoes National Park, Lake Kivu, and Kigali City Tour
-- Chakra UI-based design system with dark mode support
-- Framer Motion section and card animations
-- Lucide React icons throughout the interface
+- **Multilingual Support:** Full support for English, French, and Kinyarwanda, with a persistent language toggle in the Navbar.
+- **AI-Powered Discovery:** An interactive AI assistant that recommends experiences based on user preferences and natural language descriptions.
+- **Preference Selection:** Refine your search by experience type, budget, and trip duration.
+- **Curated Recommendations:** Polished cards showcasing top Rwandan destinations like Volcanoes National Park, Lake Kivu, and Kigali City.
+- **Modern UI/UX:** Built with React 19, Chakra UI, and Framer Motion for smooth animations and a premium feel.
+- **Dark Mode Support:** Seamless switching between light and dark themes.
 
 ## Tech Stack
 
-- React 19
-- TypeScript
-- Vite
-- Chakra UI
-- Framer Motion
-- Lucide React
-- Vercel (deployment target)
+- **Framework:** React 19 (TypeScript)
+- **Styling:** Chakra UI
+- **Animations:** Framer Motion
+- **Icons:** Lucide React
+- **Internationalization:** Custom Context-based i18n system
+- **Deployment:** Vercel
 
 ## Project Structure
 
 ```text
 src/
-  components/
+  components/         # Reusable UI components
   features/
-    preferences/
-    recommendations/
-  hooks/
-  pages/
-  types/
-  utils/
+    ai/               # AI Chat interface
+    preferences/      # Preference selection logic
+    recommendations/  # Recommendation cards and details
+  hooks/              # Custom hooks (Language, Preferences, etc.)
+  pages/              # Page layouts
+  types/              # TypeScript definitions
+  utils/              # Constants and sample data
 ```
 
 ## Setup
@@ -48,11 +48,17 @@ Build for production:
 npm run build
 ```
 
+## Recent Updates
+
+- ✅ Added AI Chat Assistant for personalized recommendations.
+- ✅ Implemented functional multilingual support (English, French, Kinyarwanda).
+- ✅ Integrated AI avatar and interactive chat flow.
+- ✅ Updated "Start Exploring" to lead directly to the AI experience.
+- ✅ Localized all major UI sections.
+
 ## Future Roadmap
 
-- AI-generated destination recommendations
-- Voice assistant interactions
-- Multilingual support
-- Vercel Functions for server-side AI orchestration
-- Neon, Upstash, Stripe, and Resend integrations
-
+- Real-time AI integration using Vercel AI SDK.
+- Voice assistant interactions.
+- Integration with live travel APIs for real-time booking and pricing.
+- User accounts and saved itineraries.

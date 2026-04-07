@@ -14,9 +14,11 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 import { ChevronDown, Globe2, MoonStar, SunMedium } from "lucide-react";
+import { useLanguage, Language } from "../hooks/useLanguage";
 
 export function Navbar() {
   const { colorMode, toggleColorMode } = useColorMode();
+  const { language, setLanguage, t } = useLanguage();
   const isDark = colorMode === "dark";
   const shellBg = useColorModeValue("rgba(255,255,255,0.56)", "rgba(6,10,14,0.72)");
   const borderColor = useColorModeValue("rgba(15,23,42,0.08)", "rgba(226,232,240,0.08)");
@@ -24,6 +26,14 @@ export function Navbar() {
   const subText = "appMuted";
   const switchBg = useColorModeValue("rgba(255,255,255,0.88)", "rgba(255,255,255,0.07)");
   const switchTextColor = "appText";
+
+  const languages: { code: Language; label: string }[] = [
+    { code: "en", label: t("nav.lang.en") },
+    { code: "fr", label: t("nav.lang.fr") },
+    { code: "rw", label: t("nav.lang.rw") },
+  ];
+
+  const currentLanguageLabel = languages.find((l) => l.code === language)?.label || "English";
 
   return (
     <Box
@@ -53,10 +63,10 @@ export function Navbar() {
             </Flex>
             <Box>
               <Text fontWeight="bold" color={titleColor}>
-                Rwanda Tour AI
+                {t("nav.title")}
               </Text>
               <Text fontSize="sm" color={subText}>
-                Smart tourism discovery
+                {t("nav.subtitle")}
               </Text>
             </Box>
           </HStack>
@@ -71,12 +81,14 @@ export function Navbar() {
                 bg={switchBg}
                 borderColor={borderColor}
               >
-                English
+                {currentLanguageLabel}
               </MenuButton>
               <MenuList>
-                <MenuItem>English</MenuItem>
-                <MenuItem>French</MenuItem>
-                <MenuItem>Kinyarwanda</MenuItem>
+                {languages.map((lang) => (
+                  <MenuItem key={lang.code} onClick={() => setLanguage(lang.code)}>
+                    {lang.label}
+                  </MenuItem>
+                ))}
               </MenuList>
             </Menu>
 
@@ -91,7 +103,7 @@ export function Navbar() {
             >
               {isDark ? <MoonStar size={16} /> : <SunMedium size={16} />}
               <Text fontSize="sm" fontWeight="medium" color={switchTextColor}>
-                {isDark ? "Dark" : "Light"}
+                {isDark ? t("nav.theme.dark") : t("nav.theme.light")}
               </Text>
               <Switch colorScheme="green" isChecked={isDark} onChange={toggleColorMode} />
             </HStack>

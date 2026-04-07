@@ -6,12 +6,14 @@ import { SAMPLE_RECOMMENDATIONS } from "../../utils/constants";
 import type { Recommendation } from "../../types/recommendation";
 import { ExperienceDetailPanel } from "./ExperienceDetailPanel";
 import { RecommendationCard } from "./RecommendationCard";
+import { useLanguage } from "../../hooks/useLanguage";
 
 interface RecommendationSectionProps {
   onReady?: (actions: { scrollToRecommendations: () => void }) => void;
 }
 
 export function RecommendationSection({ onReady }: RecommendationSectionProps) {
+  const { t } = useLanguage();
   const [selectedRecommendation, setSelectedRecommendation] = useState<Recommendation>(
     SAMPLE_RECOMMENDATIONS[0],
   );
@@ -48,15 +50,14 @@ export function RecommendationSection({ onReady }: RecommendationSectionProps) {
 
   return (
     <>
-      <Container ref={sectionRef} id="experiences" maxW="7xl" pb={{ base: 8, md: 10 }}>
+      <Container ref={sectionRef} id="recommendations" maxW="7xl" pb={{ base: 8, md: 10 }}>
         <SectionShell px={{ base: 5, md: 8 }} py={{ base: 6, md: 8 }} mb={8}>
           <Stack spacing={6}>
             <Heading size="lg" color={titleColor}>
-              Sample Experiences
+              {t("rec.title")}
             </Heading>
             <Text color={subtitleColor} maxW="2xl">
-              Each card now previews real destination imagery and opens a richer experience view
-              inline, keeping the MVP fast while making the section feel product-ready.
+              {t("ai.response.default")}
             </Text>
           </Stack>
         </SectionShell>

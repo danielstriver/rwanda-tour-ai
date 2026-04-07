@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import { ChakraProvider, ColorModeScript, extendTheme } from "@chakra-ui/react";
 
 import App from "./App";
+import { LanguageProvider } from "./hooks/useLanguage";
 
 const theme = extendTheme({
   config: {
@@ -105,8 +106,10 @@ const theme = extendTheme({
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <ChakraProvider theme={theme}>
-      <ColorModeScript initialColorMode={theme.config.initialColorMode} />
-      <App />
+      <LanguageProvider>
+        <ColorModeScript initialColorMode={theme.config.initialColorMode} />
+        <App />
+      </LanguageProvider>
     </ChakraProvider>
   </React.StrictMode>,
 );

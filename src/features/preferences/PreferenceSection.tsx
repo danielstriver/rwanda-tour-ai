@@ -16,9 +16,11 @@ import { usePreferenceState } from "../../hooks/usePreferenceState";
 import { BUDGET_OPTIONS, DURATION_OPTIONS, EXPERIENCE_OPTIONS } from "../../utils/constants";
 import type { BudgetTier, ExperienceType, TripDuration } from "../../types/recommendation";
 import { PreferenceSelector } from "./PreferenceSelector";
+import { useLanguage } from "../../hooks/useLanguage";
 
 export function PreferenceSection() {
   const { preferences, updatePreference } = usePreferenceState();
+  const { t } = useLanguage();
   const titleColor = "appHeading";
   const subtitleColor = "appMuted";
   const captionColor = "appMuted";
@@ -39,28 +41,28 @@ export function PreferenceSection() {
           <Stack spacing={6}>
             <Box>
               <Heading size="lg" mb={2} color={titleColor}>
-                Travel Preferences
+                {t("pref.title")}
               </Heading>
               <Text color={subtitleColor}>
-                Fine-tune the experience before AI recommendations are introduced.
+                {t("hero.body")}
               </Text>
             </Box>
 
             <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6}>
               <PreferenceSelector<ExperienceType>
-                label="Type of experience"
+                label={t("pref.style")}
                 value={preferences.experience}
                 options={EXPERIENCE_OPTIONS}
                 onChange={(value) => updatePreference("experience", value)}
               />
               <PreferenceSelector<BudgetTier>
-                label="Budget"
+                label={t("pref.budget")}
                 value={preferences.budget}
                 options={BUDGET_OPTIONS}
                 onChange={(value) => updatePreference("budget", value)}
               />
               <PreferenceSelector<TripDuration>
-                label="Duration"
+                label={t("pref.duration")}
                 value={preferences.duration}
                 options={DURATION_OPTIONS}
                 onChange={(value) => updatePreference("duration", value)}
@@ -70,7 +72,7 @@ export function PreferenceSection() {
             <Wrap spacing={3}>
               <WrapItem>
                 <Text fontSize="sm" color={captionColor}>
-                  Current selection:
+                  {t("nav.lang.en") === "English" ? "Current selection:" : "Guhitamo kwose:"}
                 </Text>
               </WrapItem>
               <WrapItem>
