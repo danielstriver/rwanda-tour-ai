@@ -39,9 +39,9 @@ export function Footer() {
               alignItems="center"
               gap={2}
               color={linkColor}
+              aria-label="GitHub Repository"
             >
               <Github size={18} />
-              GitHub
             </Link>
           </HStack>
         </Stack>

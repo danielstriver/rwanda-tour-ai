@@ -94,7 +94,7 @@ export const translations: Translations = {
   'rec.view_details': { en: 'View Details', fr: 'Voir les détails', rw: 'Reba amakuru arambuye' },
   
   // Footer
-  'footer.copyright': { en: '© 2024 Rwanda Tour AI. All rights reserved.', fr: '© 2024 Rwanda Tour AI. Tous droits réservés.', rw: '© 2024 Rwanda Tour AI. Uburenganzira bwose burasubitswe.' },
+  'footer.copyright': { en: '© 2026 Rwanda Tour AI. All rights reserved.', fr: '© 2026 Rwanda Tour AI. Tous droits réservés.', rw: '© 2026 Rwanda Tour AI. Uburenganzira bwose burasubitswe.' },
 };
 
 interface LanguageContextType {
