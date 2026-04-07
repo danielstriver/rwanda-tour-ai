@@ -9,6 +9,9 @@ interface Translations {
 }
 
 export const translations: Translations = {
+  // Banners
+  'banner.beta': { en: 'Rwanda Tourist Assistant is currently under development (Beta).', fr: 'Rwanda Tourist Assistant est actuellement en cours de développement (Bêta).', rw: 'Rwanda Tourist Assistant iracyubakwa (Beta).' },
+
   // Navbar
   'nav.title': { en: 'Rwanda Tourist Assistant', fr: 'Rwanda Tourist Assistant', rw: 'Rwanda Tourist Assistant' },
   'nav.subtitle': { en: 'Smart tourism discovery', fr: 'Découverte touristique intelligente', rw: 'Uvumbuzi bw’ubukerarugendo bwubatswe kuri AI' },

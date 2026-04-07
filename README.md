@@ -50,6 +50,8 @@ npm run build
 
 ## Recent Updates
 
+- ✅ Added a Beta banner to the landing page.
+- ✅ Ensured consistent Footer visibility across the entire application.
 - ✅ Updated site branding to "Rwanda Tourist Assistant".
 - ✅ Implemented functional "How It Works" guide with problem/solution visualization.
 - ✅ Redesigned landing page and AI chat to match immersive "Evimi Bul" inspiration.

@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Footer } from "../components/Footer";
 import { HeroSection } from "../components/HeroSection";
 import { Navbar } from "../components/Navbar";
+import { BetaBanner } from "../components/BetaBanner";
 import { PreferenceSection } from "../features/preferences/PreferenceSection";
 import { RecommendationSection } from "../features/recommendations/RecommendationSection";
 import { AIChatSection } from "../features/ai/AIChatSection";
@@ -55,61 +56,70 @@ export function RwandaTourPage() {
       minH="100vh"
       bgImage={background}
       transition="background 0.3s ease"
+      display="flex"
+      flexDirection="column"
     >
-      {!isExploring && !isHowItWorks && <Navbar />}
-      <AnimatePresence mode="wait">
-        {isHowItWorks ? (
-          <motion.div
-            key="how-it-works"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.4 }}
-          >
-            <HowItWorks 
-              onClose={() => setIsHowItWorks(false)} 
-              onStartSearching={handleStartExploring}
-            />
-          </motion.div>
-        ) : !isExploring ? (
-          <motion.div
-            key="landing"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.4 }}
-          >
-            <HeroSection 
-              onStartExploring={handleStartExploring} 
-              onHowItWorks={handleHowItWorks}
-            />
-            <PreferenceSection />
-            <RecommendationSection onReady={handleRecommendationsReady} onPlanExperience={handlePlanExperience} />
-          </motion.div>
-        ) : (
-          <motion.div
-            key="exploring"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-          >
-            <Box minH="100vh" display="flex" flexDirection="column">
-              <AIChatSection 
-                onRecommendationReady={handleAIRecommendationReady} 
-                onGoHome={() => {
-                  setIsExploring(false);
-                  setInitialPrompt("");
-                }} 
-                initialPrompt={initialPrompt}
+      {!isExploring && !isHowItWorks && (
+        <>
+          <Navbar />
+          <BetaBanner />
+        </>
+      )}
+      <Box flex="1">
+        <AnimatePresence mode="wait">
+          {isHowItWorks ? (
+            <motion.div
+              key="how-it-works"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.4 }}
+            >
+              <HowItWorks 
+                onClose={() => setIsHowItWorks(false)} 
+                onStartSearching={handleStartExploring}
               />
-              <Box px={{ base: 4, md: 8 }} pb={12}>
-                <RecommendationSection onReady={handleRecommendationsReady} onPlanExperience={handlePlanExperience} />
+            </motion.div>
+          ) : !isExploring ? (
+            <motion.div
+              key="landing"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.4 }}
+            >
+              <HeroSection 
+                onStartExploring={handleStartExploring} 
+                onHowItWorks={handleHowItWorks}
+              />
+              <PreferenceSection />
+              <RecommendationSection onReady={handleRecommendationsReady} onPlanExperience={handlePlanExperience} />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="exploring"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+            >
+              <Box display="flex" flexDirection="column">
+                <AIChatSection 
+                  onRecommendationReady={handleAIRecommendationReady} 
+                  onGoHome={() => {
+                    setIsExploring(false);
+                    setInitialPrompt("");
+                  }} 
+                  initialPrompt={initialPrompt}
+                />
+                <Box px={{ base: 4, md: 8 }} pb={12}>
+                  <RecommendationSection onReady={handleRecommendationsReady} onPlanExperience={handlePlanExperience} />
+                </Box>
               </Box>
-            </Box>
-          </motion.div>
-        )}
-      </AnimatePresence>
-      {!isExploring && !isHowItWorks && <Footer />}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </Box>
+      <Footer />
     </Box>
   );
 }
