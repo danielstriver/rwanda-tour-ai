@@ -37,6 +37,36 @@ export const translations: Translations = {
     fr: 'Sur la base de vos préférences, je vous recommande d\'explorer ces expériences organisées. Le Rwanda offre des paysages à couper le souffle et des rencontres uniques avec la faune !',
     rw: 'Ukurikije ibyo ukunda, ndagusaba gusura ibi bice. U Rwanda rufite amahuriro meza cyane n\'inyamaswa zidasanzwe!'
   },
+  'ai.response.kigali': {
+    en: 'Kigali is a vibrant city with amazing art and food! I recommend visiting the local markets and the Kigali Genocide Memorial to understand our history.',
+    fr: 'Kigali est une ville dynamique avec des arts et une cuisine incroyables ! Je recommande de visiter les marchés locaux et le Mémorial du génocide de Kigali pour comprendre notre histoire.',
+    rw: 'Kigali ni umujyi ushyushye ufite ubugeni n\'ibiryo byiza! Ndagusaba gusura amasoko yaho ndetse n\'Urwibutso rwa Jenoside rwa Kigali kugira ngo usobanukirwe amateka yacu.'
+  },
+  'ai.response.volcanoes': {
+    en: 'Volcanoes National Park is the best for gorilla trekking. It\'s a life-changing experience in the mist-covered mountains!',
+    fr: 'Le parc national des Volcans est le meilleur pour le trekking des gorilles. C\'est une expérience qui change la vie dans les montagnes couvertes de brume !',
+    rw: 'Pariki y\'Igihugu y\'Ibirunga ni yo nziza cyane mu gusura ingagi. Ni uburambe buhindura ubuzima mu misozi ikunze kuba irimo igihu!'
+  },
+  'ai.response.kivu': {
+    en: 'Lake Kivu is perfect for relaxation. You can enjoy boat rides, sunset views, and the beautiful beaches in Rubavu or Karongi.',
+    fr: 'Le lac Kivu est parfait pour la détente. Vous pourrez profiter de promenades en bateau, de vues sur le coucher du soleil et des magnifiques plages de Rubavu ou Karongi.',
+    rw: 'Ikiyaga cya Kivu ni cyiza cyane mu kuruhuka. Ushobora kwishimira gutembera mu bwato, kureba izuba rirenga, n\'inkombe nziza i Rubavu cyangwa i Karongi.'
+  },
+  'ai.response.nature': {
+    en: 'Rwanda is known as the "Land of a Thousand Hills". Our nature is lush and green, perfect for hiking and photography!',
+    fr: 'Le Rwanda est connu sous le nom de "Pays des mille collines". Notre nature est luxuriante et verdoyante, parfaite pour la randonnée et la photographie !',
+    rw: 'U Rwanda ruzwi nk\'igihugu cy\'imisozi igihumbi. Imiterere yacu ni nziza kandi iteye amashyushyu, ibereye gutembera no gufata amafoto!'
+  },
+  'ai.response.wildlife': {
+    en: 'For wildlife, Akagera National Park is a must-see for the Big Five, while Nyungwe offers amazing chimpanzee trekking and a canopy walk.',
+    fr: 'Pour la faune, le parc national de l\'Akagera est un incontournable pour les "Big Five", tandis que Nyungwe propose d\'incroyables trekkings de chimpanzés et une passerelle suspendue.',
+    rw: 'Ku bijyanye n\'inyamaswa, Pariki y\'Akagera ni ingenzi mu kureba inyamaswa eshanu nini (Big Five), naho Nyungwe itanga amahirwe yo gusura inkima n\'ikiraro cyo mu kirere (canopy walk).'
+  },
+  'ai.response.culture': {
+    en: 'To experience Rwandan culture, I recommend visiting the King\'s Palace in Nyanza or taking a community-based tour to learn about traditional weaving and dancing.',
+    fr: 'Pour découvrir la culture rwandaise, je recommande de visiter le Palais du Roi à Nyanza ou de faire un tour communautaire pour en savoir plus sur le tissage et la danse traditionnels.',
+    rw: 'Kugira ngo umenye umuco w\'u Rwanda, ndagusaba gusura mu Rugwiro (Ingoro y\'Umwami) i Nyanza cyangwa gusura imiryango y\'abaturage ukiga kuboha no kubyina kinyarwanda.'
+  },
 
   // Preferences
   'pref.title': { en: 'Your Travel Preferences', fr: 'Vos préférences de voyage', rw: 'Ibyo Ukunda mu Rugendo' },
