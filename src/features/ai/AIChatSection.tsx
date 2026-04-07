@@ -84,7 +84,7 @@ export function AIChatSection({ onRecommendationReady }: AIChatSectionProps) {
   };
 
   return (
-    <Container maxW="4xl" py={12} id="ai-section">
+    <Container maxW="5xl" py={4} id="ai-section">
       <SectionShell px={6} py={8}>
         <VStack spacing={6} align="stretch">
           <HStack spacing={4}>
@@ -104,7 +104,9 @@ export function AIChatSection({ onRecommendationReady }: AIChatSectionProps) {
           </HStack>
 
           <Box
-            h="400px"
+            h="calc(100vh - 400px)"
+            minH="300px"
+            maxH="550px"
             overflowY="auto"
             px={4}
             py={2}
