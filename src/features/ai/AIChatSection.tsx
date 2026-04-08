@@ -16,6 +16,7 @@ import {
 import { Send, Bot, Plus, Mic, ChevronLeft, LayoutGrid, Clock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../../hooks/useLanguage';
+import ReactMarkdown from 'react-markdown';
 
 interface Message {
   id: string;
@@ -28,6 +29,43 @@ interface AIChatSectionProps {
   onGoHome?: () => void;
   initialPrompt?: string;
 }
+
+const TypewriterMarkdown = ({ text, isAi }: { text: string; isAi: boolean }) => {
+  const [displayedText, setDisplayedText] = useState(isAi ? '' : text);
+
+  useEffect(() => {
+    if (!isAi) {
+      setDisplayedText(text);
+      return;
+    }
+    
+    let i = 0;
+    const intervalId = setInterval(() => {
+      setDisplayedText(text.slice(0, i));
+      i++;
+      if (i > text.length) {
+        clearInterval(intervalId);
+      }
+    }, 15);
+
+    return () => clearInterval(intervalId);
+  }, [text, isAi]);
+
+  return (
+    <Box sx={{
+      '& p': { mb: 2, _last: { mb: 0 } },
+      '& h1, & h2, & h3': { fontWeight: 'bold', mt: 3, mb: 2 },
+      '& h1': { fontSize: 'xl' },
+      '& h2': { fontSize: 'lg' },
+      '& h3': { fontSize: 'md' },
+      '& ul, & ol': { pl: 5, mb: 2 },
+      '& li': { mb: 1 },
+      '& strong': { fontWeight: 'bold' }
+    }}>
+      <ReactMarkdown>{displayedText}</ReactMarkdown>
+    </Box>
+  );
+};
 
 export function AIChatSection({ onRecommendationReady, onGoHome, initialPrompt }: AIChatSectionProps) {
   const { t } = useLanguage();
@@ -254,7 +292,7 @@ export function AIChatSection({ onRecommendationReady, onGoHome, initialPrompt }
                         borderBottomLeftRadius={msg.sender === 'ai' ? '4px' : '2xl'}
                         boxShadow="sm"
                       >
-                        <Text fontSize="md">{msg.text}</Text>
+                        <TypewriterMarkdown text={msg.text} isAi={msg.sender === 'ai'} />
                       </Box>
                     </Flex>
                   </motion.div>
