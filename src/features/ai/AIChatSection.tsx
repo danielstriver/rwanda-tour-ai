@@ -55,7 +55,7 @@ export function AIChatSection({ onRecommendationReady, onGoHome, initialPrompt }
     scrollToBottom();
   }, [messages]);
 
-  const handleSend = useCallback((text: string = inputValue) => {
+  const handleSend = useCallback(async (text: string = inputValue) => {
     if (!text.trim()) return;
 
     const userMessage: Message = {
@@ -68,41 +68,38 @@ export function AIChatSection({ onRecommendationReady, onGoHome, initialPrompt }
     setInputValue('');
     setIsTyping(true);
 
-    // Dynamic response selection
-    const lowercaseText = text.toLowerCase();
-    let responseKey = 'ai.response.default';
-
-    if (lowercaseText.includes('plan') || lowercaseText.includes('itinerary')) {
-      responseKey = 'ai.response.plan';
-    } else if (lowercaseText.includes('kigali') || lowercaseText.includes('city') || lowercaseText.includes('market')) {
-      responseKey = 'ai.response.kigali';
-    } else if (lowercaseText.includes('volcano') || lowercaseText.includes('gorilla') || lowercaseText.includes('mountain')) {
-      responseKey = 'ai.response.volcanoes';
-    } else if (lowercaseText.includes('lake') || lowercaseText.includes('kivu') || lowercaseText.includes('beach') || lowercaseText.includes('water')) {
-      responseKey = 'ai.response.kivu';
-    } else if (lowercaseText.includes('nature') || lowercaseText.includes('hiking') || lowercaseText.includes('hills')) {
-      responseKey = 'ai.response.nature';
-    } else if (lowercaseText.includes('wildlife') || lowercaseText.includes('animal') || lowercaseText.includes('safari') || lowercaseText.includes('akagera')) {
-      responseKey = 'ai.response.wildlife';
-    } else if (lowercaseText.includes('culture') || lowercaseText.includes('tradition') || lowercaseText.includes('dance') || lowercaseText.includes('history')) {
-      responseKey = 'ai.response.culture';
-    }
-
-    // Simulate AI response
-    setTimeout(() => {
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: text })
+      });
+      
+      const data = await response.json();
+      
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: t(responseKey),
+        text: data.reply || "I'm sorry, I couldn't process that right now.",
         sender: 'ai',
       };
-      setMessages((prev) => [...prev, aiMessage]);
-      setIsTyping(false);
       
-      // Trigger recommendations display
+      setMessages((prev) => [...prev, aiMessage]);
+      
       setTimeout(() => {
         onRecommendationReady();
-      }, 1000);
-    }, 1500);
+      }, 500);
+      
+    } catch (error) {
+      console.error("Chat error:", error);
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        text: "Connection error. Please try again later.",
+        sender: 'ai',
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
+      setIsTyping(false);
+    }
   }, [inputValue, t, onRecommendationReady]);
 
   useEffect(() => {

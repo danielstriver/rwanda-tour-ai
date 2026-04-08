@@ -1,0 +1,110 @@
+[
+  {
+    "id": "volcanoes-national-park",
+    "name": "Volcanoes National Park",
+    "category": "National Park",
+    "location": "Musanze",
+    "province": "Northern Province",
+    "price_range": "$1500 per permit for gorilla trekking",
+    "description": "Mist-covered mountains, gorilla trekking energy, and a premium wildlife escape in Rwanda's north. Home to the endangered mountain gorillas and golden monkeys. A luxury adventure.",
+    "tags": [
+      "wildlife",
+      "gorilla trekking",
+      "mountains",
+      "luxury",
+      "nature",
+      "hiking",
+      "adventure"
+    ],
+    "coordinates": {
+      "lat": -1.4554,
+      "lon": 29.5074
+    }
+  },
+  {
+    "id": "lake-kivu",
+    "name": "Lake Kivu",
+    "category": "Lake / Resort",
+    "location": "Rubavu and Karongi",
+    "province": "Western Province",
+    "price_range": "$90 - $240",
+    "description": "A relaxed lakeside experience with sunset cruises, beach walks, and scenic resort towns. Great for swimming, boat riding, and relaxing by the water.",
+    "tags": [
+      "lake",
+      "relaxing",
+      "couples",
+      "water",
+      "boat",
+      "beach",
+      "resort"
+    ],
+    "coordinates": {
+      "lat": -2,
+      "lon": 29.25
+    }
+  },
+  {
+    "id": "kigali-city-tour",
+    "name": "Kigali City Tour",
+    "category": "City Tour",
+    "location": "Kigali",
+    "province": "Kigali City",
+    "price_range": "$45 - $140",
+    "description": "Explore Rwanda's capital through markets, art spaces, local cuisine, and modern city highlights. Includes stops at the Genocide Memorial, Kimironko Market, and Inema Arts Center.",
+    "tags": [
+      "culture",
+      "city",
+      "history",
+      "food",
+      "markets",
+      "art",
+      "museum"
+    ],
+    "coordinates": {
+      "lat": -1.9441,
+      "lon": 30.0619
+    }
+  },
+  {
+    "id": "akagera-national-park",
+    "name": "Akagera National Park",
+    "category": "National Park",
+    "location": "Eastern Province",
+    "province": "Eastern Province",
+    "price_range": "$100 - $300",
+    "description": "Rwanda's only Big Five safari destination, featuring savannas, lakes, and diverse wildlife including lions, rhinos, elephants, and hippos.",
+    "tags": [
+      "wildlife",
+      "safari",
+      "big five",
+      "nature",
+      "family",
+      "savanna"
+    ],
+    "coordinates": {
+      "lat": -1.6315,
+      "lon": 30.7063
+    }
+  },
+  {
+    "id": "nyungwe-forest",
+    "name": "Nyungwe Forest National Park",
+    "category": "National Park",
+    "location": "Southwestern Rwanda",
+    "province": "Western Province",
+    "price_range": "$100 - $200",
+    "description": "One of the oldest rainforests in Africa. Known for chimpanzee trekking, the canopy walk, and incredible biodiversity with over 300 bird species.",
+    "tags": [
+      "nature",
+      "hiking",
+      "chimpanzees",
+      "canopy walk",
+      "birds",
+      "rainforest"
+    ],
+    "coordinates": {
+      "lat": -2.5255,
+      "lon": 29.2319
+    }
+  }
+]
