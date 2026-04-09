@@ -111,7 +111,7 @@ export function RwandaTourPage() {
           )}
         </AnimatePresence>
       </Box>
-      <Footer />
+      {!isExploring && <Footer />}
     </Box>
   );
 }

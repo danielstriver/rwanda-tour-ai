@@ -151,7 +151,7 @@ export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
   };
 
   return (
-    <Flex h="calc(100vh - 40px)" maxH="100vh" w="100%" color={textColor}>
+    <Flex h="100vh" w="100%" color={textColor}>
       {/* Sidebar */}
       <Box
         w={{ base: "0", md: "280px" }}
