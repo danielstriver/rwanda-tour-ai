@@ -222,11 +222,46 @@ export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
   }, [initialPrompt, handleSend]);
 
   const handleMicClick = () => {
-    setIsListening(true);
-    setTimeout(() => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    
+    if (!SpeechRecognition) {
+      alert("Your browser does not support Speech Recognition. Please try Chrome or Edge.");
+      return;
+    }
+
+    if (isListening) return;
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'en-US';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.onstart = () => {
+      setIsListening(true);
+    };
+
+    recognition.onresult = (event: any) => {
+      const transcript = event.results[0][0].transcript;
+      if (transcript) {
+        handleSend(transcript);
+      }
+    };
+
+    recognition.onerror = (event: any) => {
+      console.error("Speech recognition error", event.error);
       setIsListening(false);
-      handleSend(t('ai.mic.mock'));
-    }, 3000);
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+    };
+
+    try {
+      recognition.start();
+    } catch (e) {
+      console.error("Error starting speech recognition", e);
+      setIsListening(false);
+    }
   };
 
   return (

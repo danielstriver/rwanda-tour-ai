@@ -80,11 +80,6 @@ export const translations: Translations = {
     fr: 'Écoute...',
     rw: 'Ndumva...'
   },
-  'ai.mic.mock': {
-    en: 'I want to visit Volcanoes National Park',
-    fr: 'Je veux visiter le parc national des Volcans',
-    rw: 'Nshaka gusura pariki y\'ibirunga'
-  },
 
   // Preferences
   'pref.title': { en: 'Your Travel Preferences', fr: 'Vos préférences de voyage', rw: 'Ibyo Ukunda mu Rugendo' },
