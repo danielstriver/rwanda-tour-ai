@@ -22,6 +22,7 @@ interface Message {
   id: string;
   text: string;
   sender: 'user' | 'ai';
+  isHistorical?: boolean;
 }
 
 interface ChatSession {
@@ -36,11 +37,11 @@ interface AIChatSectionProps {
   initialPrompt?: string;
 }
 
-const TypewriterMarkdown = ({ text, isAi }: { text: string; isAi: boolean }) => {
-  const [displayedText, setDisplayedText] = useState(isAi ? '' : text);
+const TypewriterMarkdown = ({ text, isAi, isHistorical }: { text: string; isAi: boolean; isHistorical?: boolean }) => {
+  const [displayedText, setDisplayedText] = useState(isAi && !isHistorical ? '' : text);
 
   useEffect(() => {
-    if (!isAi) {
+    if (!isAi || isHistorical) {
       setDisplayedText(text);
       return;
     }
@@ -55,7 +56,7 @@ const TypewriterMarkdown = ({ text, isAi }: { text: string; isAi: boolean }) => 
     }, 15);
 
     return () => clearInterval(intervalId);
-  }, [text, isAi]);
+  }, [text, isAi, isHistorical]);
 
   return (
     <Box sx={{
@@ -205,7 +206,7 @@ export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
 
   const loadSession = (session: ChatSession) => {
     setCurrentSessionId(session.id);
-    setMessages(session.messages);
+    setMessages(session.messages.map(m => ({ ...m, isHistorical: true })));
   };
 
   const startNewChat = () => {
@@ -372,7 +373,7 @@ export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
                         borderBottomLeftRadius={msg.sender === 'ai' ? '4px' : '2xl'}
                         boxShadow="sm"
                       >
-                        <TypewriterMarkdown text={msg.text} isAi={msg.sender === 'ai'} />
+                        <TypewriterMarkdown text={msg.text} isAi={msg.sender === 'ai'} isHistorical={msg.isHistorical} />
                       </Box>
                     </Flex>
                   </motion.div>
@@ -425,3 +426,4 @@ export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
     </Flex>
   );
 }
+
