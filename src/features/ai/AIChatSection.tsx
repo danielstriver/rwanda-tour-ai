@@ -25,7 +25,6 @@ interface Message {
 }
 
 interface AIChatSectionProps {
-  onRecommendationReady: () => void;
   onGoHome?: () => void;
   initialPrompt?: string;
 }
@@ -67,7 +66,7 @@ const TypewriterMarkdown = ({ text, isAi }: { text: string; isAi: boolean }) => 
   );
 };
 
-export function AIChatSection({ onRecommendationReady, onGoHome, initialPrompt }: AIChatSectionProps) {
+export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
   const { t } = useLanguage();
   const [messages, setMessages] = useState<Message[]>([]); // Start empty to show welcome
   const [inputValue, setInputValue] = useState('');
@@ -123,10 +122,6 @@ export function AIChatSection({ onRecommendationReady, onGoHome, initialPrompt }
       
       setMessages((prev) => [...prev, aiMessage]);
       
-      setTimeout(() => {
-        onRecommendationReady();
-      }, 500);
-      
     } catch (error) {
       console.error("Chat error:", error);
       const errorMessage: Message = {
@@ -138,7 +133,7 @@ export function AIChatSection({ onRecommendationReady, onGoHome, initialPrompt }
     } finally {
       setIsTyping(false);
     }
-  }, [inputValue, t, onRecommendationReady]);
+  }, [inputValue, t]);
 
   useEffect(() => {
     if (initialPrompt && !initialPromptProcessed.current) {

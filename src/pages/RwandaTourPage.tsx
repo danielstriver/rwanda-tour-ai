@@ -47,10 +47,6 @@ export function RwandaTourPage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
-  const handleAIRecommendationReady = useCallback(() => {
-    recommendationActionsRef.current?.scrollToRecommendations();
-  }, []);
-
   return (
     <Box
       minH="100vh"
@@ -102,18 +98,14 @@ export function RwandaTourPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
             >
-              <Box display="flex" flexDirection="column">
+              <Box h="100vh">
                 <AIChatSection 
-                  onRecommendationReady={handleAIRecommendationReady} 
                   onGoHome={() => {
                     setIsExploring(false);
                     setInitialPrompt("");
                   }} 
                   initialPrompt={initialPrompt}
                 />
-                <Box px={{ base: 4, md: 8 }} pb={12}>
-                  <RecommendationSection onReady={handleRecommendationsReady} onPlanExperience={handlePlanExperience} />
-                </Box>
               </Box>
             </motion.div>
           )}
