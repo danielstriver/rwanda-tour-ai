@@ -24,6 +24,13 @@ interface Message {
   sender: 'user' | 'ai';
 }
 
+interface ChatSession {
+  id: string;
+  title: string;
+  messages: Message[];
+  updatedAt: number;
+}
+
 interface AIChatSectionProps {
   onGoHome?: () => void;
   initialPrompt?: string;
@@ -68,12 +75,32 @@ const TypewriterMarkdown = ({ text, isAi }: { text: string; isAi: boolean }) => 
 
 export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
   const { t } = useLanguage();
+  const [sessions, setSessions] = useState<ChatSession[]>(() => {
+    try {
+      const saved = localStorage.getItem('rwanda_tour_chat_sessions');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]); // Start empty to show welcome
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const initialPromptProcessed = useRef(false);
+  const currentSessionIdRef = useRef<string | null>(null);
+
+  // Sync currentSessionId with Ref for handleSend
+  useEffect(() => {
+    currentSessionIdRef.current = currentSessionId;
+  }, [currentSessionId]);
+
+  // Sync sessions with localStorage
+  useEffect(() => {
+    localStorage.setItem('rwanda_tour_chat_sessions', JSON.stringify(sessions));
+  }, [sessions]);
 
   const bgColor = useColorModeValue('rgba(0,0,0,0.05)', 'rgba(255,255,255,0.05)');
   const sidebarBg = useColorModeValue('gray.50', '#070C12');
@@ -101,7 +128,36 @@ export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
       sender: 'user',
     };
 
-    setMessages((prev) => [...prev, userMessage]);
+    let activeSessionId = currentSessionIdRef.current;
+    let isNewSession = false;
+
+    if (!activeSessionId) {
+      activeSessionId = Date.now().toString();
+      setCurrentSessionId(activeSessionId);
+      isNewSession = true;
+    }
+
+    setMessages((prev) => {
+      const newMessages = [...prev, userMessage];
+      
+      setSessions(prevSessions => {
+        if (isNewSession) {
+          return [{
+            id: activeSessionId!,
+            title: text.length > 30 ? text.substring(0, 30) + '...' : text,
+            messages: newMessages,
+            updatedAt: Date.now(),
+          }, ...prevSessions];
+        } else {
+          return prevSessions.map(s => 
+            s.id === activeSessionId ? { ...s, messages: newMessages, updatedAt: Date.now() } : s
+          );
+        }
+      });
+      
+      return newMessages;
+    });
+
     setInputValue('');
     setIsTyping(true);
 
@@ -120,7 +176,13 @@ export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
         sender: 'ai',
       };
       
-      setMessages((prev) => [...prev, aiMessage]);
+      setMessages((prev) => {
+        const newMessages = [...prev, aiMessage];
+        setSessions(prevSessions => prevSessions.map(s => 
+          s.id === activeSessionId ? { ...s, messages: newMessages, updatedAt: Date.now() } : s
+        ));
+        return newMessages;
+      });
       
     } catch (error) {
       console.error("Chat error:", error);
@@ -129,11 +191,27 @@ export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
         text: "Connection error. Please try again later.",
         sender: 'ai',
       };
-      setMessages((prev) => [...prev, errorMessage]);
+      setMessages((prev) => {
+        const newMessages = [...prev, errorMessage];
+        setSessions(prevSessions => prevSessions.map(s => 
+          s.id === activeSessionId ? { ...s, messages: newMessages, updatedAt: Date.now() } : s
+        ));
+        return newMessages;
+      });
     } finally {
       setIsTyping(false);
     }
-  }, [inputValue, t]);
+  }, [inputValue]);
+
+  const loadSession = (session: ChatSession) => {
+    setCurrentSessionId(session.id);
+    setMessages(session.messages);
+  };
+
+  const startNewChat = () => {
+    setCurrentSessionId(null);
+    setMessages([]);
+  };
 
   useEffect(() => {
     if (initialPrompt && !initialPromptProcessed.current) {
@@ -170,23 +248,32 @@ export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
           justifyContent="flex-start"
           _hover={{ bg: "brand.400" }}
           mb={8}
-          onClick={() => setMessages([])}
+          onClick={startNewChat}
         >
           New Chat
         </Button>
 
         <VStack align="stretch" spacing={4}>
           <Text fontSize="xs" fontWeight="bold" color="appMuted" textTransform="uppercase" letterSpacing="widest">
-            Recent Searches
+            Recent Chats
           </Text>
-          <HStack color="appMuted" _hover={{ color: "brand.500", cursor: "pointer" }} p={2} rounded="md" onClick={() => handleSend("Lake Kivu, relaxed pace")}>
-            <Clock size={16} />
-            <Text fontSize="sm" noOfLines={1}>Lake Kivu, relaxed pace</Text>
-          </HStack>
-          <HStack color="appMuted" _hover={{ color: "brand.500", cursor: "pointer" }} p={2} rounded="md" onClick={() => handleSend("Gorilla trekking budget")}>
-            <Clock size={16} />
-            <Text fontSize="sm" noOfLines={1}>Gorilla trekking budget</Text>
-          </HStack>
+          {sessions.length === 0 ? (
+            <Text fontSize="sm" color="appMuted" fontStyle="italic" px={2}>No recent chats</Text>
+          ) : (
+            sessions.map(session => (
+              <HStack 
+                key={session.id} 
+                color={currentSessionId === session.id ? "brand.500" : "appMuted"} 
+                _hover={{ color: "brand.500", cursor: "pointer" }} 
+                p={2} 
+                rounded="md" 
+                onClick={() => loadSession(session)}
+              >
+                <Clock size={16} />
+                <Text fontSize="sm" noOfLines={1}>{session.title}</Text>
+              </HStack>
+            ))
+          )}
         </VStack>
       </Box>
 
@@ -197,8 +284,6 @@ export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
           <HStack color="appMuted" cursor="pointer" _hover={{ color: "brand.500" }} onClick={onGoHome}>
             <ChevronLeft size={18} />
             <Text fontSize="sm">Home</Text>
-            <Box ml={2} display="inline-flex"><LayoutGrid size={18} /></Box>
-            <Text fontSize="sm">My Panel</Text>
           </HStack>
           <HStack>
             <Avatar icon={<Bot size={18} />} boxSize={8} bg="brand.500" color="black" />
