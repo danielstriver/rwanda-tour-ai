@@ -2,13 +2,6 @@ import { HfInference } from '@huggingface/inference';
 import fs from 'fs';
 import path from 'path';
 
-// Define paths
-// In Vercel serverless, __dirname is the directory of the current file.
-// When compiled, the paths might change slightly depending on the build, but for raw Vercel functions, it usually runs from root.
-const DATA_DIR = path.join(process.cwd(), 'src/data');
-const KNOWLEDGE_FILE = path.join(DATA_DIR, 'rwanda_knowledge.json');
-const EMBEDDINGS_FILE = path.join(DATA_DIR, 'rwanda_embeddings.json');
-
 const hf = new HfInference(process.env.HUGGINGFACE_API_KEY);
 const EMBEDDING_MODEL = 'sentence-transformers/all-MiniLM-L6-v2';
 const LLM_MODEL = 'Qwen/Qwen2.5-72B-Instruct';
@@ -25,19 +18,46 @@ interface KnowledgeItem {
 interface EmbeddingRecord {
   id: string;
   embedding: number[];
+  norm: number;
 }
 
-// Cosine similarity function
-function cosineSimilarity(vecA: number[], vecB: number[]): number {
-  let dotProduct = 0;
-  let normA = 0;
-  let normB = 0;
-  for (let i = 0; i < vecA.length; i++) {
-    dotProduct += vecA[i] * vecB[i];
-    normA += vecA[i] * vecA[i];
-    normB += vecB[i] * vecB[i];
+// Global cache for optimized lookup and reduced I/O
+let cachedKnowledge: Map<string, KnowledgeItem> | null = null;
+let cachedEmbeddings: EmbeddingRecord[] | null = null;
+
+function loadData() {
+  if (cachedKnowledge && cachedEmbeddings) return;
+
+  const DATA_DIR = path.join(process.cwd(), 'src/data');
+  const KNOWLEDGE_FILE = path.join(DATA_DIR, 'rwanda_knowledge.json');
+  const EMBEDDINGS_FILE = path.join(DATA_DIR, 'rwanda_embeddings.json');
+
+  if (!fs.existsSync(KNOWLEDGE_FILE) || !fs.existsSync(EMBEDDINGS_FILE)) {
+    throw new Error('Knowledge base not found');
   }
-  return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
+
+  const knowledgeArr: KnowledgeItem[] = JSON.parse(fs.readFileSync(KNOWLEDGE_FILE, 'utf-8'));
+  const embeddingsRaw: { id: string; embedding: number[] }[] = JSON.parse(fs.readFileSync(EMBEDDINGS_FILE, 'utf-8'));
+
+  cachedKnowledge = new Map(knowledgeArr.map(k => [k.id, k]));
+  cachedEmbeddings = embeddingsRaw.map(record => ({
+    ...record,
+    norm: Math.sqrt(record.embedding.reduce((acc, val) => acc + val * val, 0))
+  }));
+}
+
+/**
+ * Optimized Cosine Similarity
+ * Time Complexity: O(D) where D is embedding dimension.
+ * Space Complexity: O(1)
+ */
+function fastCosineSimilarity(queryVec: number[], queryNorm: number, record: EmbeddingRecord): number {
+  let dotProduct = 0;
+  const vecB = record.embedding;
+  for (let i = 0; i < queryVec.length; i++) {
+    dotProduct += queryVec[i] * vecB[i];
+  }
+  return dotProduct / (queryNorm * record.norm);
 }
 
 export default async function handler(req: any, res: any) {
@@ -47,37 +67,32 @@ export default async function handler(req: any, res: any) {
 
   try {
     const { message, preferences } = req.body;
-    
-    if (!message) {
-      return res.status(400).json({ error: 'Message is required' });
-    }
+    if (!message) return res.status(400).json({ error: 'Message is required' });
 
-    // 1. Read Knowledge & Embeddings
-    if (!fs.existsSync(KNOWLEDGE_FILE) || !fs.existsSync(EMBEDDINGS_FILE)) {
-      return res.status(500).json({ error: 'Knowledge base not found' });
-    }
+    // 1. Efficient Data Loading (O(1) after first load)
+    loadData();
 
-    const knowledge: KnowledgeItem[] = JSON.parse(fs.readFileSync(KNOWLEDGE_FILE, 'utf-8'));
-    const embeddings: EmbeddingRecord[] = JSON.parse(fs.readFileSync(EMBEDDINGS_FILE, 'utf-8'));
-
-    // 2. Embed user query (combining message and preferences to capture intent)
+    // 2. Query Embedding (Parallelize if possible, but here query is needed for next step)
     const queryText = `Looking for: ${message}. Preferences: ${JSON.stringify(preferences || {})}`;
-    
     const queryEmbeddingResponse = await hf.featureExtraction({
       model: EMBEDDING_MODEL,
       inputs: queryText,
     });
-    const queryEmbedding = queryEmbeddingResponse as unknown as number[];
+    const queryVec = queryEmbeddingResponse as unknown as number[];
+    const queryNorm = Math.sqrt(queryVec.reduce((acc, val) => acc + val * val, 0));
 
-    // 3. Find Top Matches (Cosine Similarity)
-    const similarities = embeddings.map(record => ({
+    // 3. Find Top Matches (O(N*D))
+    // We use a simple pass to find top 3 to avoid O(N log N) full sort if N were large
+    const similarities = cachedEmbeddings!.map(record => ({
       id: record.id,
-      score: cosineSimilarity(queryEmbedding, record.embedding)
+      score: fastCosineSimilarity(queryVec, queryNorm, record)
     }));
 
+    // For small N, sort is fine. For large N, we'd use a min-heap O(N log K).
     similarities.sort((a, b) => b.score - a.score);
-    const topIds = similarities.slice(0, 3).map(s => s.id);
-    const topContext = knowledge.filter(k => topIds.includes(k.id));
+    const topContext = similarities.slice(0, 3)
+      .map(s => cachedKnowledge!.get(s.id))
+      .filter(Boolean) as KnowledgeItem[];
 
     // 4. Construct Prompt
     const contextString = topContext.map(c => 
@@ -94,8 +109,12 @@ ${contextString}
 User Preferences: ${JSON.stringify(preferences || {})}
 `;
 
-    // 5. Generate Response
-    const llmResponse = await hf.chatCompletion({
+    // 5. Streaming Response for best TTFT (Time to First Token)
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+
+    const stream = hf.chatCompletionStream({
       model: LLM_MODEL,
       messages: [
         { role: 'system', content: systemPrompt },
@@ -105,15 +124,22 @@ User Preferences: ${JSON.stringify(preferences || {})}
       temperature: 0.7,
     });
 
-    const replyText = llmResponse.choices[0].message.content;
+    for await (const chunk of stream) {
+      if (chunk.choices && chunk.choices.length > 0) {
+        const content = chunk.choices[0].delta.content;
+        if (content) {
+          res.write(content);
+        }
+      }
+    }
 
-    return res.status(200).json({
-      reply: replyText,
-      recommendations: topContext
-    });
+    res.end();
 
   } catch (error: any) {
     console.error('API Error:', error);
-    return res.status(500).json({ error: 'Internal server error', details: error.message });
+    if (!res.headersSent) {
+      return res.status(500).json({ error: 'Internal server error', details: error.message });
+    }
+    res.end();
   }
 }
