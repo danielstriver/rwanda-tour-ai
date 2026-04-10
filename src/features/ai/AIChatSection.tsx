@@ -16,6 +16,7 @@ import {
 import { Send, Bot, Plus, Mic, ChevronLeft, LayoutGrid, Clock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../../hooks/useLanguage';
+import { usePreferenceState } from '../../hooks/usePreferenceState';
 import ReactMarkdown from 'react-markdown';
 
 interface Message {
@@ -37,15 +38,17 @@ interface AIChatSectionProps {
   initialPrompt?: string;
 }
 
-const TypewriterMarkdown = ({ text, isAi, isHistorical }: { text: string; isAi: boolean; isHistorical?: boolean }) => {
-  const [displayedText, setDisplayedText] = useState(isAi && !isHistorical ? '' : text);
+const TypewriterMarkdown = ({ text, isAi, isHistorical, isStreaming }: { text: string; isAi: boolean; isHistorical?: boolean; isStreaming?: boolean }) => {
+  const [displayedText, setDisplayedText] = useState(isAi && !isHistorical && !isStreaming ? '' : text);
 
   useEffect(() => {
-    if (!isAi || isHistorical) {
+    // If we're streaming or it's historical/user message, just show the text immediately
+    if (!isAi || isHistorical || isStreaming) {
       setDisplayedText(text);
       return;
     }
     
+    // Fallback for non-streaming AI responses (if any remain)
     let i = 0;
     const intervalId = setInterval(() => {
       setDisplayedText(text.slice(0, i));
@@ -56,7 +59,7 @@ const TypewriterMarkdown = ({ text, isAi, isHistorical }: { text: string; isAi: 
     }, 15);
 
     return () => clearInterval(intervalId);
-  }, [text, isAi, isHistorical]);
+  }, [text, isAi, isHistorical, isStreaming]);
 
   return (
     <Box sx={{
@@ -76,6 +79,7 @@ const TypewriterMarkdown = ({ text, isAi, isHistorical }: { text: string; isAi: 
 
 export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
   const { t } = useLanguage();
+  const { preferences } = usePreferenceState(); // Access preferences
   const [sessions, setSessions] = useState<ChatSession[]>(() => {
     try {
       const saved = localStorage.getItem('rwanda_tour_chat_sessions');
@@ -85,9 +89,16 @@ export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
     }
   });
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
-  const [messages, setMessages] = useState<Message[]>([]); // Start empty to show welcome
+  const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
+  const inputValueRef = useRef('');
+  
+  useEffect(() => {
+    inputValueRef.current = inputValue;
+  }, [inputValue]);
+
   const [isTyping, setIsTyping] = useState(false);
+  const [isStreaming, setIsStreaming] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const initialPromptProcessed = useRef(false);
@@ -120,11 +131,12 @@ export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
     scrollToBottom();
   }, [messages]);
 
-  const handleSend = useCallback(async (text: string = inputValue) => {
+  const handleSend = useCallback(async (textOverride?: string) => {
+    const text = textOverride !== undefined ? textOverride : inputValueRef.current;
     if (!text.trim()) return;
 
     const userMessage: Message = {
-      id: Date.now().toString(),
+      id: `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       text: text,
       sender: 'user',
     };
@@ -134,6 +146,7 @@ export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
 
     if (!activeSessionId) {
       activeSessionId = Date.now().toString();
+      currentSessionIdRef.current = activeSessionId; // Fix race condition: sync ref immediately
       setCurrentSessionId(activeSessionId);
       isNewSession = true;
     }
@@ -166,43 +179,56 @@ export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: text })
+        body: JSON.stringify({ message: text, preferences })
       });
       
-      const data = await response.json();
-      
-      const aiMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        text: data.reply || "I'm sorry, I couldn't process that right now.",
-        sender: 'ai',
-      };
-      
-      setMessages((prev) => {
-        const newMessages = [...prev, aiMessage];
-        setSessions(prevSessions => prevSessions.map(s => 
-          s.id === activeSessionId ? { ...s, messages: newMessages, updatedAt: Date.now() } : s
+      if (!response.body) throw new Error("No response body");
+
+      setIsTyping(false);
+      setIsStreaming(true);
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let aiText = "";
+      const aiMessageId = `ai-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
+      // Add empty AI message to start streaming into
+      setMessages(prev => [...prev, { id: aiMessageId, text: "", sender: 'ai' }]);
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        aiText += decoder.decode(value, { stream: true });
+        
+        setMessages(prev => prev.map(m => 
+          m.id === aiMessageId ? { ...m, text: aiText } : m
         ));
-        return newMessages;
-      });
+      }
+      
+      setIsStreaming(false);
+
+      // Final session sync
+      setSessions(prevSessions => prevSessions.map(s => 
+        s.id === activeSessionId ? { 
+          ...s, 
+          messages: s.messages.map(m => m.sender === 'user' ? m : (m.id === aiMessageId ? { ...m, text: aiText } : m)),
+          updatedAt: Date.now() 
+        } : s
+      ));
       
     } catch (error) {
       console.error("Chat error:", error);
+      setIsTyping(false);
+      setIsStreaming(false);
       const errorMessage: Message = {
-        id: (Date.now() + 1).toString(),
+        id: `error-${Date.now()}`,
         text: "Connection error. Please try again later.",
         sender: 'ai',
       };
-      setMessages((prev) => {
-        const newMessages = [...prev, errorMessage];
-        setSessions(prevSessions => prevSessions.map(s => 
-          s.id === activeSessionId ? { ...s, messages: newMessages, updatedAt: Date.now() } : s
-        ));
-        return newMessages;
-      });
-    } finally {
-      setIsTyping(false);
+      setMessages((prev) => [...prev, errorMessage]);
     }
-  }, [inputValue]);
+  }, [preferences]);
 
   const loadSession = (session: ChatSession) => {
     setCurrentSessionId(session.id);
@@ -236,6 +262,8 @@ export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
     recognition.interimResults = true;
     recognition.continuous = false;
 
+    let hasSent = false;
+
     recognition.onstart = () => {
       setIsListening(true);
     };
@@ -252,9 +280,11 @@ export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
         }
       }
 
-      if (finalTranscript) {
+      if (finalTranscript && !hasSent) {
+        hasSent = true;
+        recognition.stop();
         handleSend(finalTranscript);
-      } else if (interimTranscript) {
+      } else if (interimTranscript && !hasSent) {
         setInputValue(interimTranscript);
       }
     };
@@ -400,7 +430,7 @@ export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
           ) : (
             <VStack spacing={6} align="stretch" maxW="4xl" mx="auto">
               <AnimatePresence initial={false}>
-                {messages.map((msg) => (
+                {messages.map((msg, index) => (
                   <motion.div
                     key={msg.id}
                     initial={{ opacity: 0, y: 10 }}
@@ -420,7 +450,12 @@ export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
                         borderBottomLeftRadius={msg.sender === 'ai' ? '4px' : '2xl'}
                         boxShadow="sm"
                       >
-                        <TypewriterMarkdown text={msg.text} isAi={msg.sender === 'ai'} isHistorical={msg.isHistorical} />
+                        <TypewriterMarkdown 
+                          text={msg.text} 
+                          isAi={msg.sender === 'ai'} 
+                          isHistorical={msg.isHistorical} 
+                          isStreaming={isStreaming && index === messages.length - 1} 
+                        />
                       </Box>
                     </Flex>
                   </motion.div>
@@ -473,4 +508,3 @@ export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
     </Flex>
   );
 }
-
