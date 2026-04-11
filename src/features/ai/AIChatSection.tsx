@@ -465,7 +465,6 @@ export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
                           text={msg.text} 
                           isAi={msg.sender === 'ai'} 
                           isHistorical={msg.isHistorical} 
-                          isStreaming={isStreaming && index === messages.length - 1} 
                         />
                       </Box>
                     </Flex>
