@@ -38,28 +38,39 @@ interface AIChatSectionProps {
   initialPrompt?: string;
 }
 
-const TypewriterMarkdown = ({ text, isAi, isHistorical, isStreaming }: { text: string; isAi: boolean; isHistorical?: boolean; isStreaming?: boolean }) => {
-  const [displayedText, setDisplayedText] = useState(isAi && !isHistorical && !isStreaming ? '' : text);
+const TypewriterMarkdown = ({ text, isAi, isHistorical }: { text: string; isAi: boolean; isHistorical?: boolean }) => {
+  const [displayedText, setDisplayedText] = useState(isAi && !isHistorical ? '' : text);
+  const textRef = useRef(text);
 
   useEffect(() => {
-    // If we're streaming or it's historical/user message, just show the text immediately
-    if (!isAi || isHistorical || isStreaming) {
+    textRef.current = text;
+    // For historical or user messages, show text immediately
+    if (!isAi || isHistorical) {
       setDisplayedText(text);
+    }
+  }, [text, isAi, isHistorical]);
+
+  useEffect(() => {
+    if (!isAi || isHistorical) {
       return;
     }
     
-    // Fallback for non-streaming AI responses (if any remain)
-    let i = 0;
+    // Smooth character-by-character gliding effect
     const intervalId = setInterval(() => {
-      setDisplayedText(text.slice(0, i));
-      i++;
-      if (i > text.length) {
-        clearInterval(intervalId);
-      }
-    }, 15);
+      setDisplayedText(current => {
+        const targetText = textRef.current;
+        if (current.length < targetText.length) {
+          // Add chars smoothly, increasing speed slightly if far behind the stream
+          const diff = targetText.length - current.length;
+          const step = Math.max(1, Math.min(diff, Math.ceil(diff / 5))); // Glide faster if behind
+          return targetText.slice(0, current.length + step);
+        }
+        return current;
+      });
+    }, 20);
 
     return () => clearInterval(intervalId);
-  }, [text, isAi, isHistorical, isStreaming]);
+  }, [isAi, isHistorical]);
 
   return (
     <Box sx={{
