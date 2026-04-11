@@ -336,15 +336,17 @@ export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
   };
 
   return (
-    <Flex h="100vh" w="100%" color={textColor}>
+    <Flex h="100vh" w="100%" color={textColor} overflow="hidden">
       {/* Sidebar */}
-      <Box
+      <Flex
         w={{ base: "0", md: "280px" }}
-        display={{ base: "none", md: "block" }}
+        display={{ base: "none", md: "flex" }}
+        direction="column"
         borderRightWidth="1px"
         borderColor={borderColor}
         bg={sidebarBg}
         p={4}
+        h="100%"
       >
         <Button
           w="100%"
@@ -356,33 +358,47 @@ export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
           _hover={{ bg: "brand.400" }}
           mb={8}
           onClick={startNewChat}
+          flexShrink={0}
         >
           New Chat
         </Button>
 
-        <VStack align="stretch" spacing={4}>
-          <Text fontSize="xs" fontWeight="bold" color="appMuted" textTransform="uppercase" letterSpacing="widest">
-            Recent Chats
-          </Text>
-          {sessions.length === 0 ? (
-            <Text fontSize="sm" color="appMuted" fontStyle="italic" px={2}>No recent chats</Text>
-          ) : (
-            sessions.map(session => (
-              <HStack 
-                key={session.id} 
-                color={currentSessionId === session.id ? "brand.500" : "appMuted"} 
-                _hover={{ color: "brand.500", cursor: "pointer" }} 
-                p={2} 
-                rounded="md" 
-                onClick={() => loadSession(session)}
-              >
-                <Clock size={16} />
-                <Text fontSize="sm" noOfLines={1}>{session.title}</Text>
-              </HStack>
-            ))
-          )}
-        </VStack>
-      </Box>
+        <Box flex={1} overflowY="auto" pr={2} sx={{
+          '&::-webkit-scrollbar': {
+            width: '4px',
+          },
+          '&::-webkit-scrollbar-track': {
+            width: '6px',
+          },
+          '&::-webkit-scrollbar-thumb': {
+            background: 'rgba(255,255,255,0.1)',
+            borderRadius: '24px',
+          },
+        }}>
+          <VStack align="stretch" spacing={4}>
+            <Text fontSize="xs" fontWeight="bold" color="appMuted" textTransform="uppercase" letterSpacing="widest">
+              Recent Chats
+            </Text>
+            {sessions.length === 0 ? (
+              <Text fontSize="sm" color="appMuted" fontStyle="italic" px={2}>No recent chats</Text>
+            ) : (
+              sessions.map(session => (
+                <HStack 
+                  key={session.id} 
+                  color={currentSessionId === session.id ? "brand.500" : "appMuted"} 
+                  _hover={{ color: "brand.500", cursor: "pointer" }} 
+                  p={2} 
+                  rounded="md" 
+                  onClick={() => loadSession(session)}
+                >
+                  <Clock size={16} />
+                  <Text fontSize="sm" noOfLines={1}>{session.title}</Text>
+                </HStack>
+              ))
+            )}
+          </VStack>
+        </Box>
+      </Flex>
 
       {/* Main Chat Area */}
       <Flex flex={1} direction="column" position="relative" bg={mainBg}>
