@@ -186,6 +186,24 @@ export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
     setInputValue('');
     setIsTyping(true);
 
+    if (isNewSession) {
+      // Generate AI title in background
+      fetch('/api/title', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: text })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.title) {
+          setSessions(prevSessions => prevSessions.map(s => 
+            s.id === activeSessionId ? { ...s, title: data.title } : s
+          ));
+        }
+      })
+      .catch(err => console.error("Error generating title:", err));
+    }
+
     try {
       const response = await fetch('/api/chat', {
         method: 'POST',
