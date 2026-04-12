@@ -1,24 +1,13 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { KnowledgeItem } from '../src/types/knowledge';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const DATA_DIR = path.join(__dirname, '../src/data');
 const OUT_FILE = path.join(DATA_DIR, 'rwanda_knowledge.json');
-
-interface KnowledgeItem {
-  id: string;
-  name: string;
-  category: string;
-  location: string;
-  province?: string;
-  price_range?: string;
-  description: string;
-  tags: string[];
-  coordinates?: { lat: number; lon: number };
-}
 
 // Hardcoded high-quality data to seed the knowledge base
 const seedData: KnowledgeItem[] = [

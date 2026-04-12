@@ -18,18 +18,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../../hooks/useLanguage';
 import { usePreferenceState } from '../../hooks/usePreferenceState';
 import ReactMarkdown from 'react-markdown';
-
-interface Message {
-  id: string;
-  text: string;
-  sender: 'user' | 'ai';
-  isHistorical?: boolean;
-}
+import { ChatMessage } from '../../types/chat';
 
 interface ChatSession {
   id: string;
   title: string;
-  messages: Message[];
+  messages: ChatMessage[];
   updatedAt: number;
 }
 
@@ -100,7 +94,7 @@ export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
     }
   });
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState('');
   const inputValueRef = useRef('');
   
@@ -146,7 +140,7 @@ export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
     const text = textOverride !== undefined ? textOverride : inputValueRef.current;
     if (!text.trim()) return;
 
-    const userMessage: Message = {
+    const userMessage: ChatMessage = {
       id: `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       text: text,
       sender: 'user',
@@ -250,7 +244,7 @@ export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
       console.error("Chat error:", error);
       setIsTyping(false);
       setIsStreaming(false);
-      const errorMessage: Message = {
+      const errorMessage: ChatMessage = {
         id: `error-${Date.now()}`,
         text: "Connection error. Please try again later.",
         sender: 'ai',

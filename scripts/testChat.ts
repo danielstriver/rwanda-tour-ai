@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
+import { KnowledgeItem, EmbeddingRecord } from '../src/types/knowledge';
 
 dotenv.config();
 
@@ -17,42 +18,45 @@ const hf = new HfInference(process.env.HUGGINGFACE_API_KEY);
 const EMBEDDING_MODEL = 'sentence-transformers/all-MiniLM-L6-v2';
 const LLM_MODEL = 'Qwen/Qwen2.5-72B-Instruct';
 
-function cosineSimilarity(vecA: number[], vecB: number[]): number {
+function fastCosineSimilarity(queryVec: number[], queryNorm: number, record: EmbeddingRecord): number {
   let dotProduct = 0;
-  let normA = 0;
-  let normB = 0;
-  for (let i = 0; i < vecA.length; i++) {
-    dotProduct += vecA[i] * vecB[i];
-    normA += vecA[i] * vecA[i];
-    normB += vecB[i] * vecB[i];
+  const vecB = record.embedding;
+  for (let i = 0; i < queryVec.length; i++) {
+    dotProduct += queryVec[i] * vecB[i];
   }
-  return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
+  return dotProduct / (queryNorm * record.norm);
 }
 
 async function test() {
   const message = "I want to see some animals and maybe a beach.";
   
-  const knowledge = JSON.parse(fs.readFileSync(KNOWLEDGE_FILE, 'utf-8'));
-  const embeddings = JSON.parse(fs.readFileSync(EMBEDDINGS_FILE, 'utf-8'));
+  if (!fs.existsSync(KNOWLEDGE_FILE) || !fs.existsSync(EMBEDDINGS_FILE)) {
+    console.error('Knowledge base or embeddings not found. Please run generateEmbeddings.ts first.');
+    process.exit(1);
+  }
+
+  const knowledge: KnowledgeItem[] = JSON.parse(fs.readFileSync(KNOWLEDGE_FILE, 'utf-8'));
+  const embeddings: EmbeddingRecord[] = JSON.parse(fs.readFileSync(EMBEDDINGS_FILE, 'utf-8'));
 
   const queryEmbeddingResponse = await hf.featureExtraction({
     model: EMBEDDING_MODEL,
     inputs: message,
   });
-  const queryEmbedding = queryEmbeddingResponse as unknown as number[];
+  const queryVec = queryEmbeddingResponse as unknown as number[];
+  const queryNorm = Math.sqrt(queryVec.reduce((acc, val) => acc + val * val, 0));
 
-  const similarities = embeddings.map((record: any) => ({
+  const similarities = embeddings.map((record) => ({
     id: record.id,
-    score: cosineSimilarity(queryEmbedding, record.embedding)
+    score: fastCosineSimilarity(queryVec, queryNorm, record)
   }));
 
-  similarities.sort((a: any, b: any) => b.score - a.score);
-  const topIds = similarities.slice(0, 3).map((s: any) => s.id);
-  const topContext = knowledge.filter((k: any) => topIds.includes(k.id));
+  similarities.sort((a, b) => b.score - a.score);
+  const topIds = similarities.slice(0, 3).map((s) => s.id);
+  const topContext = knowledge.filter((k) => topIds.includes(k.id));
 
-  console.log("Top matches:", topContext.map((c: any) => c.name));
+  console.log("Top matches:", topContext.map((c) => c.name));
 
-  const contextString = topContext.map((c: any) => 
+  const contextString = topContext.map((c) => 
     `- ${c.name} (${c.category} in ${c.location}): ${c.description}`
   ).join('\n');
 

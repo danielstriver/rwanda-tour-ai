@@ -1,19 +1,30 @@
+import { VercelRequest, VercelResponse } from '@vercel/node';
+import { z } from 'zod';
 import { HfInference } from '@huggingface/inference';
 
 const hf = new HfInference(process.env.HUGGINGFACE_API_KEY);
 const LLM_MODEL = 'Qwen/Qwen2.5-72B-Instruct';
 
-export default async function handler(req: any, res: any) {
+const TitlePayloadSchema = z.object({
+  message: z.string().min(1, "Message is required"),
+});
+
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
-    const { message } = req.body;
-    
-    if (!message) {
-      return res.status(400).json({ error: 'Message is required' });
+    const validatedBody = TitlePayloadSchema.safeParse(req.body);
+
+    if (!validatedBody.success) {
+      return res.status(400).json({ 
+        error: 'Invalid request payload', 
+        details: validatedBody.error.format() 
+      });
     }
+
+    const { message } = validatedBody.data;
 
     const systemPrompt = `You are a helpful assistant. Your goal is to generate a very concise, 2-5 word descriptive title for a chat session based ONLY on the user's first message. 
     Examples:
@@ -42,7 +53,11 @@ export default async function handler(req: any, res: any) {
     return res.status(200).json({ title });
 
   } catch (error: any) {
-    console.error('Title API Error:', error);
-    return res.status(500).json({ error: 'Internal server error', details: error.message });
+    console.error('Title API Error:', {
+      message: error.message,
+      stack: error.stack,
+      timestamp: new Date().toISOString()
+    });
+    return res.status(500).json({ error: 'An internal server error occurred. Please try again later.' });
   }
 }

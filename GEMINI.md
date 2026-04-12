@@ -1,59 +1,59 @@
 # Rwanda Tourist Assistant - Project Context
 
-Rwanda Tourist Assistant is a UI-first MVP prototype of an AI-powered tourism recommendation platform for Rwanda. It provides a polished landing experience, preference selection flow, and static recommendation cards, serving as a foundation for future AI integrations.
+Rwanda Tourist Assistant is a RAG-powered AI assistant prototype designed to provide personalized tourism recommendations for Rwanda. It combines a polished UI with a Retrieval-Augmented Generation (RAG) backend to deliver grounded, data-driven travel advice.
 
 ## Project Overview
 
-- **Purpose:** Provide personalized travel recommendations for Rwanda based on user preferences.
-- **Status:** MVP Prototype (UI-focused with static data).
+- **Purpose:** Provide personalized, accurate travel recommendations for Rwanda based on user preferences and grounded local knowledge.
+- **Status:** RAG-powered AI Assistant (AI-integrated prototype).
 - **Tech Stack:**
-  - **Framework:** React 19 (TypeScript)
-  - **Build Tool:** Vite
-  - **Styling:** Chakra UI (with custom theme and dark mode support)
-  - **Animations:** Framer Motion
-  - **Icons:** Lucide React
-  - **Deployment:** Vercel
+  - **Frontend:** React 19 (TypeScript), Chakra UI, Framer Motion, Lucide React.
+  - **AI/RAG Backend:** Vercel Serverless Functions (Node.js/TypeScript).
+  - **LLM & Embeddings:** Hugging Face Inference API (Qwen2.5-72B for chat, sentence-transformers for embeddings).
+  - **Data Source:** Curated local datasets and OpenStreetMap (Overpass API).
+  - **Storage:** In-memory vector search (JSON-based) for speed and simplicity.
 
 ## Architecture
 
-The project follows a feature-based structure within the `src` directory:
+The project follows a feature-based structure with an integrated AI backend:
 
-- `src/components/`: Reusable UI components (Navbar, Footer, Hero, etc.).
-- `src/features/preferences/`: Logic and UI for selecting experience types, budget, and duration.
-- `src/features/recommendations/`: Logic and UI for displaying destination recommendations.
-- `src/hooks/`: Custom React hooks (e.g., `usePreferenceState`, `useAutoSlide`).
-- `src/pages/`: Page-level components (currently only `RwandaTourPage.tsx`).
-- `src/types/`: TypeScript interfaces and types.
-- `src/utils/`: Constants, sample data (`SAMPLE_RECOMMENDATIONS`), and helper functions.
+- `api/`: Vercel Serverless Functions (Backend logic for AI chat and title generation).
+- `src/features/ai/`: UI components and logic for the RAG-powered AI chat experience.
+- `src/features/preferences/`: UI for selecting experience types, budget, and duration.
+- `src/features/recommendations/`: UI for displaying static and AI-generated destination recommendations.
+- `src/data/`: Core knowledge base (`rwanda_knowledge.json`) and pre-computed embeddings (`rwanda_embeddings.json`).
+- `scripts/`: Utility scripts for building the knowledge base and generating embeddings using `tsx`.
+- `src/hooks/`: Custom React hooks (e.g., `usePreferenceState`, `useLanguage`).
+- `public/learn/`: Documentation for the RAG architecture and system design.
 
 ## Development Workflow
 
 ### Key Commands
 
 - `npm install`: Install project dependencies.
-- `npm run dev`: Start the Vite development server.
-- `npm run build`: Compile TypeScript and build the production-ready assets.
-- `npm run preview`: Preview the locally built production version.
+- `npm run dev`: Start the Vite development server (Frontend only).
+- `npx vercel dev`: Start the local development environment with serverless functions (Requires `.env` with `HUGGINGFACE_API_KEY`).
+- `npx tsx scripts/generateEmbeddings.ts`: Re-generate embeddings after updating the knowledge base.
 
 ### Coding Conventions
 
 - **Component Style:** Functional components using TypeScript and Chakra UI.
 - **Styling:** Prefer Chakra UI's style props and `semanticTokens` for consistent theme and dark mode support.
-- **State Management:** Use custom hooks (e.g., `usePreferenceState`) to encapsulate feature-specific state.
-- **Animations:** Use `framer-motion` for section transitions and interactive elements.
-- **File Naming:** PascalCase for components (`Navbar.tsx`), camelCase for hooks and utils (`useAutoSlide.ts`).
+- **RAG Pattern:** Maintain a clear separation between the knowledge base (JSON) and the inference logic.
+- **State Management:** Use custom hooks to encapsulate feature-specific state and AI interaction logic.
+- **Localization:** Use the `useLanguage` hook for multi-language support (English/French/Kinyarwanda).
 
 ## Key Files for Context
 
-- `package.json`: Project dependencies and scripts.
-- `src/main.tsx`: Entry point and Chakra UI theme configuration.
-- `src/pages/RwandaTourPage.tsx`: Main layout and section orchestration.
-- `src/utils/constants.ts`: Contains the `SAMPLE_RECOMMENDATIONS` data model.
-- `src/types/recommendation.ts`: Core data structures for the recommendation engine.
+- `api/chat.ts`: Main entry point for the RAG-based AI recommendation engine.
+- `src/data/rwanda_knowledge.json`: The source of truth for all tourist destinations and experiences.
+- `src/features/ai/AIChatSection.tsx`: The primary UI for user interaction with the assistant.
+- `public/learn/RAG_ASSISTANT_ARCHITECTURE.md`: Detailed explanation of the RAG pipeline.
+- `src/pages/RwandaTourPage.tsx`: Main layout orchestrating all sections.
 
-## Future Roadmap (Context for AI)
+## Future Roadmap
 
-- Integration with Vercel Functions for AI-driven recommendations.
-- Dynamic data fetching from external APIs or databases.
-- Enhanced interactive elements like a voice-enabled travel assistant.
-- Expanded localization and multilingual support.
+- **Dynamic Data:** Integration with live external APIs for real-time availability and pricing.
+- **Voice Assistant:** Enhanced interactive elements with voice-to-text and text-to-speech.
+- **Expanded Localization:** Full translation of the knowledge base into Kinyarwanda and French.
+- **User Accounts:** Personalized travel itineraries and saved recommendations.

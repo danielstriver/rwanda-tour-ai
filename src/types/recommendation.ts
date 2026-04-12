@@ -4,6 +4,12 @@ export type ExperienceType = "Nature" | "Wildlife" | "Culture" | "City";
 export type BudgetTier = "Low" | "Medium" | "Premium";
 export type TripDuration = "1 day" | "3 days" | "1 week";
 
+export interface UserPreference {
+  experience: ExperienceType;
+  budget: BudgetTier;
+  duration: TripDuration;
+}
+
 export interface Recommendation {
   id: string;
   title: string;

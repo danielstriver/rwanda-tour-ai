@@ -1,25 +1,22 @@
+import { VercelRequest, VercelResponse } from '@vercel/node';
+import { z } from 'zod';
 import { HfInference } from '@huggingface/inference';
 import fs from 'fs';
 import path from 'path';
+import { KnowledgeItem, EmbeddingRecord } from '../src/types/knowledge';
 
 const hf = new HfInference(process.env.HUGGINGFACE_API_KEY);
 const EMBEDDING_MODEL = 'sentence-transformers/all-MiniLM-L6-v2';
 const LLM_MODEL = 'Qwen/Qwen2.5-72B-Instruct';
 
-interface KnowledgeItem {
-  id: string;
-  name: string;
-  category: string;
-  location: string;
-  description: string;
-  tags: string[];
-}
-
-interface EmbeddingRecord {
-  id: string;
-  embedding: number[];
-  norm: number;
-}
+const ChatPayloadSchema = z.object({
+  message: z.string().min(1, "Message is required"),
+  preferences: z.object({
+    experience: z.string().optional(),
+    budget: z.string().optional(),
+    duration: z.string().optional(),
+  }).optional(),
+});
 
 // Global cache for optimized lookup and reduced I/O
 let cachedKnowledge: Map<string, KnowledgeItem> | null = null;
@@ -37,13 +34,10 @@ function loadData() {
   }
 
   const knowledgeArr: KnowledgeItem[] = JSON.parse(fs.readFileSync(KNOWLEDGE_FILE, 'utf-8'));
-  const embeddingsRaw: { id: string; embedding: number[] }[] = JSON.parse(fs.readFileSync(EMBEDDINGS_FILE, 'utf-8'));
+  const embeddingsRaw: EmbeddingRecord[] = JSON.parse(fs.readFileSync(EMBEDDINGS_FILE, 'utf-8'));
 
   cachedKnowledge = new Map(knowledgeArr.map(k => [k.id, k]));
-  cachedEmbeddings = embeddingsRaw.map(record => ({
-    ...record,
-    norm: Math.sqrt(record.embedding.reduce((acc, val) => acc + val * val, 0))
-  }));
+  cachedEmbeddings = embeddingsRaw;
 }
 
 /**
@@ -60,14 +54,22 @@ function fastCosineSimilarity(queryVec: number[], queryNorm: number, record: Emb
   return dotProduct / (queryNorm * record.norm);
 }
 
-export default async function handler(req: any, res: any) {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
-    const { message, preferences } = req.body;
-    if (!message) return res.status(400).json({ error: 'Message is required' });
+    const validatedBody = ChatPayloadSchema.safeParse(req.body);
+    
+    if (!validatedBody.success) {
+      return res.status(400).json({ 
+        error: 'Invalid request payload', 
+        details: validatedBody.error.format() 
+      });
+    }
+
+    const { message, preferences } = validatedBody.data;
 
     // 1. Efficient Data Loading (O(1) after first load)
     loadData();
@@ -82,13 +84,11 @@ export default async function handler(req: any, res: any) {
     const queryNorm = Math.sqrt(queryVec.reduce((acc, val) => acc + val * val, 0));
 
     // 3. Find Top Matches (O(N*D))
-    // We use a simple pass to find top 3 to avoid O(N log N) full sort if N were large
     const similarities = cachedEmbeddings!.map(record => ({
       id: record.id,
       score: fastCosineSimilarity(queryVec, queryNorm, record)
     }));
 
-    // For small N, sort is fine. For large N, we'd use a min-heap O(N log K).
     similarities.sort((a, b) => b.score - a.score);
     const topContext = similarities.slice(0, 3)
       .map(s => cachedKnowledge!.get(s.id))
@@ -136,9 +136,15 @@ User Preferences: ${JSON.stringify(preferences || {})}
     res.end();
 
   } catch (error: any) {
-    console.error('API Error:', error);
+    // Sanitize error response and log details internally
+    console.error('API Error:', {
+      message: error.message,
+      stack: error.stack,
+      timestamp: new Date().toISOString()
+    });
+    
     if (!res.headersSent) {
-      return res.status(500).json({ error: 'Internal server error', details: error.message });
+      return res.status(500).json({ error: 'An internal server error occurred. Please try again later.' });
     }
     res.end();
   }

@@ -1,24 +1,18 @@
 import { useState } from "react";
 
 import { BUDGET_OPTIONS, DURATION_OPTIONS, EXPERIENCE_OPTIONS } from "../utils/constants";
-import type { BudgetTier, ExperienceType, TripDuration } from "../types/recommendation";
-
-interface PreferenceState {
-  experience: ExperienceType;
-  budget: BudgetTier;
-  duration: TripDuration;
-}
+import type { BudgetTier, ExperienceType, TripDuration, UserPreference } from "../types/recommendation";
 
 export function usePreferenceState() {
-  const [preferences, setPreferences] = useState<PreferenceState>({
+  const [preferences, setPreferences] = useState<UserPreference>({
     experience: EXPERIENCE_OPTIONS[0],
     budget: BUDGET_OPTIONS[1],
     duration: DURATION_OPTIONS[1],
   });
 
-  const updatePreference = <K extends keyof PreferenceState>(
+  const updatePreference = <K extends keyof UserPreference>(
     key: K,
-    value: PreferenceState[K],
+    value: UserPreference[K],
   ) => {
     setPreferences((current) => ({
       ...current,

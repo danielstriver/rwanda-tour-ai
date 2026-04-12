@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
+import { KnowledgeItem, EmbeddingRecord } from '../src/types/knowledge';
 
 dotenv.config();
 
@@ -22,22 +23,6 @@ if (!HF_TOKEN) {
 }
 
 const hf = new HfInference(HF_TOKEN);
-
-interface KnowledgeItem {
-  id: string;
-  name: string;
-  category: string;
-  location: string;
-  province?: string;
-  price_range?: string;
-  description: string;
-  tags: string[];
-}
-
-interface EmbeddingRecord {
-  id: string;
-  embedding: number[];
-}
 
 async function getEmbeddings(texts: string[]): Promise<number[][]> {
   const result = await hf.featureExtraction({
@@ -66,10 +51,15 @@ async function generateEmbeddings() {
   try {
     const embeddings = await getEmbeddings(textsToEmbed);
 
-    const records: EmbeddingRecord[] = data.map((item, index) => ({
-      id: item.id,
-      embedding: embeddings[index]
-    }));
+    const records: EmbeddingRecord[] = data.map((item, index) => {
+      const embedding = embeddings[index];
+      const norm = Math.sqrt(embedding.reduce((acc, val) => acc + val * val, 0));
+      return {
+        id: item.id,
+        embedding,
+        norm
+      };
+    });
 
     fs.writeFileSync(OUTPUT_FILE, JSON.stringify(records, null, 2));
     console.log(`✅ Successfully generated and saved embeddings to ${OUTPUT_FILE}`);
