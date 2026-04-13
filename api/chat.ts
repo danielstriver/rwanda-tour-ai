@@ -1,13 +1,17 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import { z } from 'zod';
 import { HfInference } from '@huggingface/inference';
-import fs from 'fs';
-import path from 'path';
-import { KnowledgeItem, EmbeddingRecord } from '../src/types/knowledge';
+import { createClient } from '@supabase/supabase-js';
+import { KnowledgeItem } from '../src/types/knowledge';
 
 const hf = new HfInference(process.env.HUGGINGFACE_API_KEY);
 const EMBEDDING_MODEL = 'sentence-transformers/all-MiniLM-L6-v2';
 const LLM_MODEL = 'Qwen/Qwen2.5-72B-Instruct';
+
+const SUPABASE_URL = process.env.SUPABASE_URL || '';
+const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
 const ChatPayloadSchema = z.object({
   message: z.string().min(1, "Message is required"),
@@ -17,42 +21,6 @@ const ChatPayloadSchema = z.object({
     duration: z.string().optional(),
   }).optional(),
 });
-
-// Global cache for optimized lookup and reduced I/O
-let cachedKnowledge: Map<string, KnowledgeItem> | null = null;
-let cachedEmbeddings: EmbeddingRecord[] | null = null;
-
-function loadData() {
-  if (cachedKnowledge && cachedEmbeddings) return;
-
-  const DATA_DIR = path.join(process.cwd(), 'src/data');
-  const KNOWLEDGE_FILE = path.join(DATA_DIR, 'rwanda_knowledge.json');
-  const EMBEDDINGS_FILE = path.join(DATA_DIR, 'rwanda_embeddings.json');
-
-  if (!fs.existsSync(KNOWLEDGE_FILE) || !fs.existsSync(EMBEDDINGS_FILE)) {
-    throw new Error('Knowledge base not found');
-  }
-
-  const knowledgeArr: KnowledgeItem[] = JSON.parse(fs.readFileSync(KNOWLEDGE_FILE, 'utf-8'));
-  const embeddingsRaw: EmbeddingRecord[] = JSON.parse(fs.readFileSync(EMBEDDINGS_FILE, 'utf-8'));
-
-  cachedKnowledge = new Map(knowledgeArr.map(k => [k.id, k]));
-  cachedEmbeddings = embeddingsRaw;
-}
-
-/**
- * Optimized Cosine Similarity
- * Time Complexity: O(D) where D is embedding dimension.
- * Space Complexity: O(1)
- */
-function fastCosineSimilarity(queryVec: number[], queryNorm: number, record: EmbeddingRecord): number {
-  let dotProduct = 0;
-  const vecB = record.embedding;
-  for (let i = 0; i < queryVec.length; i++) {
-    dotProduct += queryVec[i] * vecB[i];
-  }
-  return dotProduct / (queryNorm * record.norm);
-}
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
@@ -71,30 +39,28 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const { message, preferences } = validatedBody.data;
 
-    // 1. Efficient Data Loading (O(1) after first load)
-    loadData();
-
-    // 2. Query Embedding (Parallelize if possible, but here query is needed for next step)
+    // 1. Query Embedding
     const queryText = `Looking for: ${message}. Preferences: ${JSON.stringify(preferences || {})}`;
     const queryEmbeddingResponse = await hf.featureExtraction({
       model: EMBEDDING_MODEL,
       inputs: queryText,
     });
     const queryVec = queryEmbeddingResponse as unknown as number[];
-    const queryNorm = Math.sqrt(queryVec.reduce((acc, val) => acc + val * val, 0));
 
-    // 3. Find Top Matches (O(N*D))
-    const similarities = cachedEmbeddings!.map(record => ({
-      id: record.id,
-      score: fastCosineSimilarity(queryVec, queryNorm, record)
-    }));
+    // 2. Find Top Matches via Supabase Vector Search
+    const { data: matches, error: searchError } = await supabase.rpc('match_destinations', {
+      query_embedding: queryVec,
+      match_threshold: 0.1, // Adjust as needed
+      match_count: 3
+    });
 
-    similarities.sort((a, b) => b.score - a.score);
-    const topContext = similarities.slice(0, 3)
-      .map(s => cachedKnowledge!.get(s.id))
-      .filter(Boolean) as KnowledgeItem[];
+    if (searchError) {
+      throw new Error(`Supabase search error: ${searchError.message}`);
+    }
 
-    // 4. Construct Prompt
+    const topContext = (matches || []).map((m: any) => m.metadata) as KnowledgeItem[];
+
+    // 3. Construct Prompt
     const contextString = topContext.map(c => 
       `- ${c.name} (${c.category} in ${c.location}): ${c.description}`
     ).join('\n');
@@ -109,7 +75,7 @@ ${contextString}
 User Preferences: ${JSON.stringify(preferences || {})}
 `;
 
-    // 5. Streaming Response for best TTFT (Time to First Token)
+    // 4. Streaming Response
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
@@ -136,7 +102,6 @@ User Preferences: ${JSON.stringify(preferences || {})}
     res.end();
 
   } catch (error: any) {
-    // Sanitize error response and log details internally
     console.error('API Error:', {
       message: error.message,
       stack: error.stack,
