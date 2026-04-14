@@ -16,6 +16,8 @@
     "@emotion/styled": "^11.14.0",
     "@huggingface/inference": "^4.13.15",
     "@supabase/supabase-js": "^2.103.0",
+    "@upstash/ratelimit": "^2.0.8",
+    "@upstash/redis": "^1.37.0",
     "@vercel/node": "^5.7.4",
     "framer-motion": "^11.18.2",
     "lucide-react": "^0.511.0",

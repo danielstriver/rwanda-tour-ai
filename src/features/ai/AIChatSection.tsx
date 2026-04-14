@@ -156,25 +156,22 @@ export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
       isNewSession = true;
     }
 
-    setMessages((prev) => {
-      const newMessages = [...prev, userMessage];
-      
-      setSessions(prevSessions => {
-        if (isNewSession) {
-          return [{
-            id: activeSessionId!,
-            title: text.length > 30 ? text.substring(0, 30) + '...' : text,
-            messages: newMessages,
-            updatedAt: Date.now(),
-          }, ...prevSessions];
-        } else {
-          return prevSessions.map(s => 
-            s.id === activeSessionId ? { ...s, messages: newMessages, updatedAt: Date.now() } : s
-          );
-        }
-      });
-      
-      return newMessages;
+    // 1. Add user message to UI and session list
+    setMessages((prev) => [...prev, userMessage]);
+    
+    setSessions(prevSessions => {
+      if (isNewSession) {
+        return [{
+          id: activeSessionId!,
+          title: text.length > 30 ? text.substring(0, 30) + '...' : text,
+          messages: [userMessage],
+          updatedAt: Date.now(),
+        }, ...prevSessions];
+      } else {
+        return prevSessions.map(s => 
+          s.id === activeSessionId ? { ...s, messages: [...s.messages, userMessage], updatedAt: Date.now() } : s
+        );
+      }
     });
 
     setInputValue('');
@@ -215,8 +212,13 @@ export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
       let aiText = "";
       const aiMessageId = `ai-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
-      // Add empty AI message to start streaming into
-      setMessages(prev => [...prev, { id: aiMessageId, text: "", sender: 'ai' }]);
+      // 2. Add empty AI message to UI and session list
+      const aiMessage: ChatMessage = { id: aiMessageId, text: "", sender: 'ai' };
+      setMessages(prev => [...prev, aiMessage]);
+      
+      setSessions(prevSessions => prevSessions.map(s => 
+        s.id === activeSessionId ? { ...s, messages: [...s.messages, aiMessage] } : s
+      ));
 
       while (true) {
         const { done, value } = await reader.read();
@@ -231,11 +233,11 @@ export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
       
       setIsStreaming(false);
 
-      // Final session sync
+      // 3. Final session sync with the full AI text
       setSessions(prevSessions => prevSessions.map(s => 
         s.id === activeSessionId ? { 
           ...s, 
-          messages: s.messages.map(m => m.sender === 'user' ? m : (m.id === aiMessageId ? { ...m, text: aiText } : m)),
+          messages: s.messages.map(m => m.id === aiMessageId ? { ...m, text: aiText } : m),
           updatedAt: Date.now() 
         } : s
       ));
@@ -250,10 +252,17 @@ export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
         sender: 'ai',
       };
       setMessages((prev) => [...prev, errorMessage]);
+      
+      // Save error message to session list
+      setSessions(prevSessions => prevSessions.map(s => 
+        s.id === activeSessionId ? { ...s, messages: [...s.messages, errorMessage], updatedAt: Date.now() } : s
+      ));
     }
   }, [preferences]);
 
+
   const loadSession = (session: ChatSession) => {
+    if (!session || !session.messages || !Array.isArray(session.messages)) return;
     setCurrentSessionId(session.id);
     setMessages(session.messages.map(m => ({ ...m, isHistorical: true })));
   };

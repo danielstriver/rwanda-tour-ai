@@ -2,6 +2,8 @@ import { VercelRequest, VercelResponse } from '@vercel/node';
 import { z } from 'zod';
 import { HfInference } from '@huggingface/inference';
 import { createClient } from '@supabase/supabase-js';
+import { Redis } from '@upstash/redis';
+import { Ratelimit } from '@upstash/ratelimit';
 import { KnowledgeItem } from '../src/types/knowledge';
 
 const hf = new HfInference(process.env.HUGGINGFACE_API_KEY);
@@ -12,6 +14,23 @@ const SUPABASE_URL = process.env.SUPABASE_URL || '';
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+
+// Initialize Upstash Redis for rate limiting
+const redis = (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN)
+  ? new Redis({
+      url: process.env.UPSTASH_REDIS_REST_URL,
+      token: process.env.UPSTASH_REDIS_REST_TOKEN,
+    })
+  : null;
+
+const ratelimit = redis
+  ? new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(10, '86400 s'), // 10 requests per 24 hours
+      analytics: true,
+      prefix: '@upstash/ratelimit',
+    })
+  : null;
 
 const ChatPayloadSchema = z.object({
   message: z.string().min(1, "Message is required"),
@@ -28,6 +47,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
+    // 1. Rate Limiting based on IP
+    if (ratelimit) {
+      const identifier = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'anonymous';
+      const { success, limit, reset, remaining } = await ratelimit.limit(identifier.toString());
+
+      res.setHeader('X-RateLimit-Limit', limit.toString());
+      res.setHeader('X-RateLimit-Remaining', remaining.toString());
+      res.setHeader('X-RateLimit-Reset', reset.toString());
+
+      if (!success) {
+        return res.status(429).json({ 
+          error: 'Rate limit exceeded. Please try again tomorrow.',
+          reset: new Date(reset).toLocaleString()
+        });
+      }
+    }
+
     const validatedBody = ChatPayloadSchema.safeParse(req.body);
     
     if (!validatedBody.success) {
@@ -39,7 +75,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const { message, preferences } = validatedBody.data;
 
-    // 1. Query Embedding
+    // 2. Query Embedding
     const queryText = `Looking for: ${message}. Preferences: ${JSON.stringify(preferences || {})}`;
     const queryEmbeddingResponse = await hf.featureExtraction({
       model: EMBEDDING_MODEL,
@@ -47,7 +83,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
     const queryVec = queryEmbeddingResponse as unknown as number[];
 
-    // 2. Find Top Matches via Supabase Vector Search
+    // 3. Find Top Matches via Supabase Vector Search
     const { data: matches, error: searchError } = await supabase.rpc('match_destinations', {
       query_embedding: queryVec,
       match_threshold: 0.1, // Adjust as needed
@@ -60,7 +96,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const topContext = (matches || []).map((m: any) => m.metadata) as KnowledgeItem[];
 
-    // 3. Construct Prompt
+    // 4. Construct Prompt
     const contextString = topContext.map(c => 
       `- ${c.name} (${c.category} in ${c.location}): ${c.description}`
     ).join('\n');
@@ -75,7 +111,7 @@ ${contextString}
 User Preferences: ${JSON.stringify(preferences || {})}
 `;
 
-    // 4. Streaming Response
+    // 5. Streaming Response
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
