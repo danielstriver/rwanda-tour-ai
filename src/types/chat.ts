@@ -10,4 +10,6 @@ export interface ChatMessage {
   text: string;
   sender: "user" | "ai";
   isHistorical?: boolean;
+  isError?: boolean;
+  resetTime?: string;
 }

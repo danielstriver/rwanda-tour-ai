@@ -201,7 +201,25 @@ export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: text, preferences })
       });
-      
+
+      if (response.status === 429) {
+        const data = await response.json();
+        setIsTyping(false);
+        const rateLimitMsg: ChatMessage = {
+          id: `error-${Date.now()}`,
+          text: "You've reached the daily limit of 10 messages.",
+          sender: 'ai',
+          isError: true,
+          resetTime: data.reset,
+        };
+        setMessages(prev => [...prev, rateLimitMsg]);
+        setSessions(prevSessions => prevSessions.map(s =>
+          s.id === activeSessionId ? { ...s, messages: [...s.messages, rateLimitMsg], updatedAt: Date.now() } : s
+        ));
+        return;
+      }
+
+      if (!response.ok) throw new Error(`Server error: ${response.status}`);
       if (!response.body) throw new Error("No response body");
 
       setIsTyping(false);
@@ -248,8 +266,9 @@ export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
       setIsStreaming(false);
       const errorMessage: ChatMessage = {
         id: `error-${Date.now()}`,
-        text: "Connection error. Please try again later.",
+        text: "Something went wrong. Please check your connection and try again.",
         sender: 'ai',
+        isError: true,
       };
       setMessages((prev) => [...prev, errorMessage]);
       
@@ -487,23 +506,48 @@ export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
                     transition={{ duration: 0.3 }}
                   >
                     <Flex justify={msg.sender === 'user' ? 'flex-end' : 'flex-start'}>
-                      <Box
-                        maxW="80%"
-                        bg={msg.sender === 'user' ? userMsgBg : aiMsgBg}
-                        color={msg.sender === 'user' ? 'black' : textColor}
-                        px={5}
-                        py={3}
-                        rounded="2xl"
-                        borderBottomRightRadius={msg.sender === 'user' ? '4px' : '2xl'}
-                        borderBottomLeftRadius={msg.sender === 'ai' ? '4px' : '2xl'}
-                        boxShadow="sm"
-                      >
-                        <TypewriterMarkdown 
-                          text={msg.text} 
-                          isAi={msg.sender === 'ai'} 
-                          isHistorical={msg.isHistorical} 
-                        />
-                      </Box>
+                      {msg.isError ? (
+                        <Box
+                          maxW="80%"
+                          bg="orange.50"
+                          border="1px solid"
+                          borderColor="orange.300"
+                          color="orange.800"
+                          px={5}
+                          py={4}
+                          rounded="2xl"
+                          borderBottomLeftRadius="4px"
+                          boxShadow="sm"
+                        >
+                          <HStack spacing={2} mb={msg.resetTime ? 2 : 0}>
+                            <Clock size={15} />
+                            <Text fontWeight="semibold" fontSize="sm">{msg.text}</Text>
+                          </HStack>
+                          {msg.resetTime && (
+                            <Text fontSize="xs" color="orange.600">
+                              Your limit resets at {msg.resetTime}. Come back then to continue exploring Rwanda!
+                            </Text>
+                          )}
+                        </Box>
+                      ) : (
+                        <Box
+                          maxW="80%"
+                          bg={msg.sender === 'user' ? userMsgBg : aiMsgBg}
+                          color={msg.sender === 'user' ? 'black' : textColor}
+                          px={5}
+                          py={3}
+                          rounded="2xl"
+                          borderBottomRightRadius={msg.sender === 'user' ? '4px' : '2xl'}
+                          borderBottomLeftRadius={msg.sender === 'ai' ? '4px' : '2xl'}
+                          boxShadow="sm"
+                        >
+                          <TypewriterMarkdown
+                            text={msg.text}
+                            isAi={msg.sender === 'ai'}
+                            isHistorical={msg.isHistorical}
+                          />
+                        </Box>
+                      )}
                     </Flex>
                   </motion.div>
                 ))}
