@@ -25,72 +25,169 @@ export const translations: Translations = {
   'hero.eyebrow': { en: 'We rethought travel search', fr: 'Nous avons repensé la recherche de voyage', rw: 'Twashatse uburyo bushya bwo gushaka ingendo' },
   'hero.title.part1': { en: 'Just tell us, ', fr: 'Dites-nous simplement, ', rw: 'Tubwire gusa, ' },
   'hero.title.part2': { en: "we'll find it.", fr: 'nous le trouverons.', rw: 'tuzabishaka.' },
-  'hero.subtitle': { en: 'Skip the filters. Say what you need, type or talk. We\'ll search thousands of experiences across Rwanda for you.', fr: 'Oubliez les filtres. Dites ce dont vous avez besoin, tapez ou parlez. Nous chercherons des milliers d\'expériences à travers le Rwanda pour vous.', rw: 'Reka gukoresha akayunguruzo. Vuga icyo ukeneye, andika cyangwa uvuge. Tuzagushakira amagana y\'uburambe mu Rwanda.' },
-  'hero.body': { en: 'Start with your travel style, budget, and duration to preview curated experiences across Rwanda.', fr: 'Commencez par votre style de voyage, votre budget et votre durée pour prévisualiser des expériences organisées à travers le Rwanda.', rw: 'Tangira n\'uburyo ukunda gukora ingendo, ingengo y\'imari, n\'igihe uzamara kugira ngo urebe uburyo bwateguwe bwo gusura u Rwanda.' },
+  'hero.subtitle': { en: 'Skip the filters. Say what you need, type or talk. We\'ll search thousands of experiences across Rwanda for you.', fr: 'Oubliez les filtres. Dites ce dont vous avez besoin, tapez ou parlez. Nous chercherons des milliers d\'expériences à travers le Rwanda pour vous.', rw: 'Reka gukoresha akayunguruzo. Vuga icyo ukeneye, andika cyangwa uvuge. Tuzagushakira amagana y\’uburambe mu Rwanda.' },
+  'hero.body': { en: 'Start with your travel style, budget, and duration to preview curated experiences across Rwanda.', fr: 'Commencez par votre style de voyage, votre budget et votre durée pour prévisualiser des expériences organisées à travers le Rwanda.', rw: 'Tangira n\’uburyo ukunda gukora ingendo, ingengo y\’imari, n\’igihe uzamara kugira ngo urebe uburyo bwateguwe bwo gusura u Rwanda.' },
   'hero.cta': { en: 'Start Searching', fr: 'Commencer la recherche', rw: 'Tangira Gushaka' },
   'hero.secondary_cta': { en: 'How It Works?', fr: 'Comment ça marche ?', rw: 'Bikora bite?' },
 
   // AI Section
   'ai.title': { en: 'How can I help you today?', fr: 'Comment puis-je vous aider aujourd\'hui ?', rw: 'Nshobora kugufasha nte uyu munsi?' },
   'ai.placeholder': { en: 'Describe your dream trip to Rwanda...', fr: 'Décrivez votre voyage de rêve au Rwanda...', rw: 'Sobanura urugendo rwawe ruroshye mu Rwanda...' },
+  'ai.input.placeholder': { en: 'What kind of experience are you looking for? Tell me...', fr: 'Quel type d\'expérience recherchez-vous ? Dites-moi...', rw: 'Ni ubuhe bwoko bw\’uburambe ushaka? Mbwire...' },
   'ai.send': { en: 'Send', fr: 'Envoyer', rw: 'Ohereza' },
   'ai.thinking': { en: 'Thinking...', fr: 'Réflexion...', rw: 'Ntekereza...' },
-  'ai.response.default': { 
+  'ai.assistant.subtitle': { en: 'Travel Assistant', fr: 'Assistant de voyage', rw: 'Umufasha w\’Ingendo' },
+  'ai.response.default': {
     en: 'Based on your preferences, I recommend exploring these curated experiences. Rwanda offers breathtaking landscapes and unique wildlife encounters!',
     fr: 'Sur la base de vos préférences, je vous recommande d\'explorer ces expériences organisées. Le Rwanda offre des paysages à couper le souffle et des rencontres uniques avec la faune !',
-    rw: 'Ukurikije ibyo ukunda, ndagusaba gusura ibi bice. U Rwanda rufite amahuriro meza cyane n\'inyamaswa zidasanzwe!'
+    rw: 'Ukurikije ibyo ukunda, ndagusaba gusura ibi bice. U Rwanda rufite amahuriro meza cyane n\’inyamaswa zidasanzwe!'
   },
   'ai.response.kigali': {
     en: 'Kigali is a vibrant city with amazing art and food! I recommend visiting the local markets and the Kigali Genocide Memorial to understand our history.',
     fr: 'Kigali est une ville dynamique avec des arts et une cuisine incroyables ! Je recommande de visiter les marchés locaux et le Mémorial du génocide de Kigali pour comprendre notre histoire.',
-    rw: 'Kigali ni umujyi ushyushye ufite ubugeni n\'ibiryo byiza! Ndagusaba gusura amasoko yaho ndetse n\'Urwibutso rwa Jenoside rwa Kigali kugira ngo usobanukirwe amateka yacu.'
+    rw: 'Kigali ni umujyi ushyushye ufite ubugeni n\’ibiryo byiza! Ndagusaba gusura amasoko yaho ndetse n\’Urwibutso rwa Jenoside rwa Kigali kugira ngo usobanukirwe amateka yacu.'
   },
   'ai.response.volcanoes': {
     en: 'Volcanoes National Park is the best for gorilla trekking. It\'s a life-changing experience in the mist-covered mountains!',
     fr: 'Le parc national des Volcans est le meilleur pour le trekking des gorilles. C\'est une expérience qui change la vie dans les montagnes couvertes de brume !',
-    rw: 'Pariki y\'Igihugu y\'Ibirunga ni yo nziza cyane mu gusura ingagi. Ni uburambe buhindura ubuzima mu misozi ikunze kuba irimo igihu!'
+    rw: 'Pariki y\’Igihugu y\’Ibirunga ni yo nziza cyane mu gusura ingagi. Ni uburambe buhindura ubuzima mu misozi ikunze kuba irimo igihu!'
   },
   'ai.response.kivu': {
     en: 'Lake Kivu is perfect for relaxation. You can enjoy boat rides, sunset views, and the beautiful beaches in Rubavu or Karongi.',
     fr: 'Le lac Kivu est parfait pour la détente. Vous pourrez profiter de promenades en bateau, de vues sur le coucher du soleil et des magnifiques plages de Rubavu ou Karongi.',
-    rw: 'Ikiyaga cya Kivu ni cyiza cyane mu kuruhuka. Ushobora kwishimira gutembera mu bwato, kureba izuba rirenga, n\'inkombe nziza i Rubavu cyangwa i Karongi.'
+    rw: 'Ikiyaga cya Kivu ni cyiza cyane mu kuruhuka. Ushobora kwishimira gutembera mu bwato, kureba izuba rirenga, n\’inkombe nziza i Rubavu cyangwa i Karongi.'
   },
   'ai.response.nature': {
     en: 'Rwanda is known as the "Land of a Thousand Hills". Our nature is lush and green, perfect for hiking and photography!',
     fr: 'Le Rwanda est connu sous le nom de "Pays des mille collines". Notre nature est luxuriante et verdoyante, parfaite pour la randonnée et la photographie !',
-    rw: 'U Rwanda ruzwi nk\'igihugu cy\'imisozi igihumbi. Imiterere yacu ni nziza kandi iteye amashyushyu, ibereye gutembera no gufata amafoto!'
+    rw: 'U Rwanda ruzwi nk\’igihugu cy\’imisozi igihumbi. Imiterere yacu ni nziza kandi iteye amashyushyu, ibereye gutembera no gufata amafoto!'
   },
   'ai.response.wildlife': {
     en: 'For wildlife, Akagera National Park is a must-see for the Big Five, while Nyungwe offers amazing chimpanzee trekking and a canopy walk.',
     fr: 'Pour la faune, le parc national de l\'Akagera est un incontournable pour les "Big Five", tandis que Nyungwe propose d\'incroyables trekkings de chimpanzés et une passerelle suspendue.',
-    rw: 'Ku bijyanye n\'inyamaswa, Pariki y\'Akagera ni ingenzi mu kureba inyamaswa eshanu nini (Big Five), naho Nyungwe itanga amahirwe yo gusura inkima n\'ikiraro cyo mu kirere (canopy walk).'
+    rw: 'Ku bijyanye n\’inyamaswa, Pariki y\’Akagera ni ingenzi mu kureba inyamaswa eshanu nini (Big Five), naho Nyungwe itanga amahirwe yo gusura inkima n\’ikiraro cyo mu kirere (canopy walk).'
   },
   'ai.response.culture': {
     en: 'To experience Rwandan culture, I recommend visiting the King\'s Palace in Nyanza or taking a community-based tour to learn about traditional weaving and dancing.',
     fr: 'Pour découvrir la culture rwandaise, je recommande de visiter le Palais du Roi à Nyanza ou de faire un tour communautaire pour en savoir plus sur le tissage et la danse traditionnels.',
-    rw: 'Kugira ngo umenye umuco w\'u Rwanda, ndagusaba gusura mu Rugwiro (Ingoro y\'Umwami) i Nyanza cyangwa gusura imiryango y\'abaturage ukiga kuboha no kubyina kinyarwanda.'
+    rw: 'Kugira ngo umenye umuco w\’u Rwanda, ndagusaba gusura mu Rugwiro (Ingoro y\’Umwami) i Nyanza cyangwa gusura imiryango y\’abaturage ukiga kuboha no kubyina kinyarwanda.'
   },
   'ai.response.plan': {
     en: 'Here is an overview for your experience: **Estimated Budget:** $200 - $500. **Don\'t miss:** The local community interactions and the unique landscape photography spots!',
     fr: 'Voici un aperçu de votre expérience : **Budget estimé :** 200 $ - 500 $. **À ne pas manquer :** Les interactions avec la communauté locale et les spots de photographie de paysage uniques !',
-    rw: 'Dore incamake y\'urugendo rwawe: **Ingengo y\'imari:** $200 - $500. **Ntuzicikwe na:** Gusabana n\'abaturage ndetse n\'amafoto meza y\'imisozi y\'u Rwanda!'
+    rw: 'Dore incamake y\’urugendo rwawe: **Ingengo y\’imari:** $200 - $500. **Ntuzicikwe na:** Gusabana n\’abaturage ndetse n\’amafoto meza y\’imisozi y\’u Rwanda!'
   },
   'ai.mic.listening': {
     en: 'Listening...',
     fr: 'Écoute...',
     rw: 'Ndumva...'
   },
+  'ai.mic.prompt': {
+    en: 'Click the mic, tell me — I\'ll find it',
+    fr: 'Cliquez sur le micro, dites-moi — je trouverai',
+    rw: 'Kanda kuri mikoro, mbwire — nzabibona'
+  },
+  'ai.welcome.title': {
+    en: 'Welcome back!',
+    fr: 'Bienvenue de retour !',
+    rw: 'Murakaza neza!'
+  },
+  'ai.welcome.subtitle': {
+    en: 'Pick up where you left off with your recent searches or start a new one.',
+    fr: 'Reprenez là où vous en étiez avec vos recherches récentes ou démarrez-en une nouvelle.',
+    rw: 'Komeza aho wahagaritsemo mu bihakorwa bishya cyangwa tangira gushaka bishya.'
+  },
+  'ai.welcome.title_new': {
+    en: 'Start your Rwanda journey.',
+    fr: 'Commencez votre voyage au Rwanda.',
+    rw: 'Tangira urugendo rwawe mu Rwanda.'
+  },
+  'ai.welcome.subtitle_new': {
+    en: 'Tell me what kind of experience you\'re looking for. Type or use the mic.',
+    fr: 'Dites-moi quel type d\'expérience vous recherchez. Tapez ou utilisez le micro.',
+    rw: 'Mbwire ubuhe bwoko bw\’uburambe ushaka. Andika cyangwa koresha mikoro.'
+  },
+  'ai.suggestion.akagera': {
+    en: '3-day luxury in Akagera',
+    fr: 'Luxe de 3 jours à l\'Akagera',
+    rw: 'Minsi 3 y\’ubwiza muri Akagera'
+  },
+  'ai.suggestion.kigali': {
+    en: 'Budget-friendly in Kigali',
+    fr: 'Économique à Kigali',
+    rw: 'Ihendutse i Kigali'
+  },
+  'ai.ratelimit.text': {
+    en: 'You\'ve reached the daily limit of 10 messages.',
+    fr: 'Vous avez atteint la limite quotidienne de 10 messages.',
+    rw: 'Wageze ku mipaka ya buri munsi y\’ubutumwa 10.'
+  },
+  'ai.ratelimit.reset': {
+    en: 'Your limit resets at {time}. Come back then to continue exploring Rwanda!',
+    fr: 'Votre limite se réinitialise à {time}. Revenez ensuite pour continuer à explorer le Rwanda !',
+    rw: 'Imipaka yawe izasubirana saa {time}. Garuka ukomeze gusura u Rwanda!'
+  },
+  'ai.error.generic': {
+    en: 'Something went wrong. Please check your connection and try again.',
+    fr: 'Une erreur s\'est produite. Veuillez vérifier votre connexion et réessayer.',
+    rw: 'Hari ikibazo cyabaye. Reba niba ufite interineti hanyuma ugerageze nanone.'
+  },
+  'ai.error.model_loading': {
+    en: 'The AI model is warming up — please try again in a few seconds.',
+    fr: 'Le modèle IA se prépare — veuillez réessayer dans quelques secondes.',
+    rw: 'Modeli ya AI iratangira — gerageza nanone nyuma ya segundes nke.'
+  },
+
+  // Chat sidebar
+  'chat.new': { en: 'New Chat', fr: 'Nouvelle discussion', rw: 'Ikiganiro Gishya' },
+  'chat.recent': { en: 'Recent Chats', fr: 'Discussions récentes', rw: 'Ibiganiro Bishya' },
+  'chat.empty': { en: 'No recent chats', fr: 'Aucune discussion récente', rw: 'Nta biganiro bya vuba' },
+  'chat.back_home': { en: 'Home', fr: 'Accueil', rw: 'Ahabanza' },
+
+  // Plan experience prompt (prefix only — append the experience title after)
+  'plan.prompt': {
+    en: 'I want to plan an itinerary for ',
+    fr: 'Je veux planifier un itinéraire pour ',
+    rw: 'Ndashaka gutegura urugendo rwa '
+  },
 
   // Preferences
   'pref.title': { en: 'Your Travel Preferences', fr: 'Vos préférences de voyage', rw: 'Ibyo Ukunda mu Rugendo' },
-  'pref.style': { en: 'Travel Style', fr: 'Style de voyage', rw: 'Uburyo bw\'Urugendo' },
-  'pref.budget': { en: 'Budget Range', fr: 'Tranche de budget', rw: 'Ingengo y\'imari' },
+  'pref.style': { en: 'Travel Style', fr: 'Style de voyage', rw: 'Uburyo bw\’Urugendo' },
+  'pref.budget': { en: 'Budget Range', fr: 'Tranche de budget', rw: 'Ingengo y\’imari' },
   'pref.duration': { en: 'Duration', fr: 'Durée', rw: 'Igihe' },
+  'pref.current': { en: 'Current selection:', fr: 'Sélection actuelle :', rw: 'Ihitamo rya none:' },
+
+  // Preference option labels
+  'pref.option.Nature': { en: 'Nature', fr: 'Nature', rw: 'Imiterere' },
+  'pref.option.Wildlife': { en: 'Wildlife', fr: 'Faune', rw: 'Inyamaswa' },
+  'pref.option.Culture': { en: 'Culture', fr: 'Culture', rw: 'Umuco' },
+  'pref.option.City': { en: 'City', fr: 'Ville', rw: 'Umujyi' },
+  'pref.option.Low': { en: 'Low', fr: 'Bas', rw: 'Hasi' },
+  'pref.option.Medium': { en: 'Medium', fr: 'Moyen', rw: 'Hagati' },
+  'pref.option.Premium': { en: 'Premium', fr: 'Premium', rw: 'Nziza cyane' },
+  'pref.option.1 day': { en: '1 day', fr: '1 jour', rw: 'Umunsi 1' },
+  'pref.option.3 days': { en: '3 days', fr: '3 jours', rw: 'Iminsi 3' },
+  'pref.option.1 week': { en: '1 week', fr: '1 semaine', rw: 'Icyumweru 1' },
 
   // Recommendations
   'rec.title': { en: 'Curated Recommendations', fr: 'Recommandations organisées', rw: 'Ibyo Twaguhitiyemo' },
+  'rec.subtitle': {
+    en: 'Adjust your preferences above to explore experiences matched to your travel style.',
+    fr: 'Ajustez vos préférences ci-dessus pour explorer des expériences adaptées à votre style de voyage.',
+    rw: 'Hindura ibyo ukunda hejuru kugira ngo urebe uburambe bubereye uburyo bwawe bw\’ingendo.'
+  },
   'rec.view_details': { en: 'View Details', fr: 'Voir les détails', rw: 'Reba amakuru arambuye' },
-  
+
+  // Experience detail panel
+  'exp.selected': { en: 'Selected experience', fr: 'Expérience sélectionnée', rw: 'Uburambe bwahiswemo' },
+  'exp.location': { en: 'Location', fr: 'Lieu', rw: 'Aho Biherereye' },
+  'exp.stay': { en: 'Suggested stay', fr: 'Séjour suggéré', rw: 'Igihe cyateganijwe' },
+  'exp.price': { en: 'Price range', fr: 'Fourchette de prix', rw: 'Igiciro' },
+  'exp.best_for': { en: 'Best for', fr: 'Idéal pour', rw: 'Cyiza cyane ku' },
+  'exp.plan': { en: 'Plan This Experience', fr: 'Planifier cette expérience', rw: 'Tegura Ubu Burambe' },
+  'exp.back': { en: 'Back to experiences', fr: 'Retour aux expériences', rw: 'Subira ku burambe' },
+
   // How It Works
   'how.pain1.title': { en: 'Research Fatigue', fr: 'Fatigue de recherche', rw: 'Umunaniro wo gushakashaka' },
   'how.pain1.desc': { en: 'Hours spent jumping between blogs, travel sites, and reviews. Your eyes hurt, still no plan.', fr: 'Des heures passées à sauter entre les blogs, les sites de voyage et les avis. Vos yeux font mal, toujours pas de plan.', rw: 'Amasaha menshi yakoreshejwe mu gusoma amablogu, imbuga z’ubukerarugendo, n’ibitekerezo by’abandi. Amaso akurya, ariko nta gahunda ufite.' },
@@ -126,7 +223,24 @@ interface LanguageContextType {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [language, setLanguage] = useState<Language>('en');
+  const [language, setLanguageState] = useState<Language>(() => {
+    try {
+      const saved = localStorage.getItem('rwanda_tour_lang');
+      if (saved === 'en' || saved === 'fr' || saved === 'rw') return saved;
+    } catch {
+      // localStorage unavailable
+    }
+    return 'en';
+  });
+
+  const setLanguage = (lang: Language) => {
+    try {
+      localStorage.setItem('rwanda_tour_lang', lang);
+    } catch {
+      // ignore
+    }
+    setLanguageState(lang);
+  };
 
   const t = (key: string): string => {
     return translations[key]?.[language] || key;

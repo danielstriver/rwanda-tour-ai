@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 
-export function useAutoSlide(totalSlides: number, intervalMs = 3200) {
+export function useAutoSlide(totalSlides: number, intervalMs = 3200, isPaused = false) {
   const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
-    if (totalSlides <= 1) {
+    if (totalSlides <= 1 || isPaused) {
       return undefined;
     }
 
@@ -13,7 +13,7 @@ export function useAutoSlide(totalSlides: number, intervalMs = 3200) {
     }, intervalMs);
 
     return () => window.clearInterval(intervalId);
-  }, [intervalMs, totalSlides]);
+  }, [intervalMs, totalSlides, isPaused]);
 
   return {
     activeIndex,

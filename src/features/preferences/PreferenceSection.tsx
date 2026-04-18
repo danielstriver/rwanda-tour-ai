@@ -12,14 +12,14 @@ import {
 
 import { MotionBox } from "../../components/MotionBox";
 import { SectionShell } from "../../components/SectionShell";
-import { usePreferenceState } from "../../hooks/usePreferenceState";
+import { usePreferences } from "./PreferenceContext";
 import { BUDGET_OPTIONS, DURATION_OPTIONS, EXPERIENCE_OPTIONS } from "../../utils/constants";
 import type { BudgetTier, ExperienceType, TripDuration } from "../../types/recommendation";
 import { PreferenceSelector } from "./PreferenceSelector";
 import { useLanguage } from "../../hooks/useLanguage";
 
 export function PreferenceSection() {
-  const { preferences, updatePreference } = usePreferenceState();
+  const { preferences, updatePreference } = usePreferences();
   const { t } = useLanguage();
   const titleColor = "appHeading";
   const subtitleColor = "appMuted";
@@ -54,40 +54,43 @@ export function PreferenceSection() {
                 value={preferences.experience}
                 options={EXPERIENCE_OPTIONS}
                 onChange={(value) => updatePreference("experience", value)}
+                translateOption={(opt) => t(`pref.option.${opt}`)}
               />
               <PreferenceSelector<BudgetTier>
                 label={t("pref.budget")}
                 value={preferences.budget}
                 options={BUDGET_OPTIONS}
                 onChange={(value) => updatePreference("budget", value)}
+                translateOption={(opt) => t(`pref.option.${opt}`)}
               />
               <PreferenceSelector<TripDuration>
                 label={t("pref.duration")}
                 value={preferences.duration}
                 options={DURATION_OPTIONS}
                 onChange={(value) => updatePreference("duration", value)}
+                translateOption={(opt) => t(`pref.option.${opt}`)}
               />
             </SimpleGrid>
 
             <Wrap spacing={3}>
               <WrapItem>
                 <Text fontSize="sm" color={captionColor}>
-                  {t("nav.lang.en") === "English" ? "Current selection:" : "Guhitamo kwose:"}
+                  {t("pref.current")}
                 </Text>
               </WrapItem>
               <WrapItem>
                 <Text px={3} py={1.5} rounded="full" bg={activeChipBg} color={activeChipColor} fontSize="sm">
-                  {preferences.experience}
+                  {t(`pref.option.${preferences.experience}`)}
                 </Text>
               </WrapItem>
               <WrapItem>
                 <Text px={3} py={1.5} rounded="full" bg={passiveChipBg} color={chipTextColor} fontSize="sm">
-                  {preferences.budget}
+                  {t(`pref.option.${preferences.budget}`)}
                 </Text>
               </WrapItem>
               <WrapItem>
                 <Text px={3} py={1.5} rounded="full" bg={passiveChipBg} color={chipTextColor} fontSize="sm">
-                  {preferences.duration}
+                  {t(`pref.option.${preferences.duration}`)}
                 </Text>
               </WrapItem>
             </Wrap>

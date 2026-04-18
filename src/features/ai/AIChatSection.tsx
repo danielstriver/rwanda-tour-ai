@@ -13,78 +13,37 @@ import {
   Heading,
   useColorModeValue,
 } from '@chakra-ui/react';
-import { Send, Bot, Plus, Mic, ChevronLeft, LayoutGrid, Clock } from 'lucide-react';
+import { Send, Bot, Plus, Mic, ChevronLeft, Clock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../../hooks/useLanguage';
-import { usePreferenceState } from '../../hooks/usePreferenceState';
+import { usePreferences } from '../preferences/PreferenceContext';
 import ReactMarkdown from 'react-markdown';
-import { ChatMessage } from '../../types/chat';
-
-interface ChatSession {
-  id: string;
-  title: string;
-  messages: ChatMessage[];
-  updatedAt: number;
-}
+import type { ChatMessage, ChatSession } from '../../types/chat';
 
 interface AIChatSectionProps {
   onGoHome?: () => void;
   initialPrompt?: string;
 }
 
-const TypewriterMarkdown = ({ text, isAi, isHistorical }: { text: string; isAi: boolean; isHistorical?: boolean }) => {
-  const [displayedText, setDisplayedText] = useState(isAi && !isHistorical ? '' : text);
-  const textRef = useRef(text);
-
-  useEffect(() => {
-    textRef.current = text;
-    // For historical or user messages, show text immediately
-    if (!isAi || isHistorical) {
-      setDisplayedText(text);
-    }
-  }, [text, isAi, isHistorical]);
-
-  useEffect(() => {
-    if (!isAi || isHistorical) {
-      return;
-    }
-    
-    // Smooth character-by-character gliding effect
-    const intervalId = setInterval(() => {
-      setDisplayedText(current => {
-        const targetText = textRef.current;
-        if (current.length < targetText.length) {
-          // Add chars smoothly, increasing speed slightly if far behind the stream
-          const diff = targetText.length - current.length;
-          const step = Math.max(1, Math.min(diff, Math.ceil(diff / 5))); // Glide faster if behind
-          return targetText.slice(0, current.length + step);
-        }
-        return current;
-      });
-    }, 20);
-
-    return () => clearInterval(intervalId);
-  }, [isAi, isHistorical]);
-
-  return (
-    <Box sx={{
-      '& p': { mb: 2, _last: { mb: 0 } },
-      '& h1, & h2, & h3': { fontWeight: 'bold', mt: 3, mb: 2 },
-      '& h1': { fontSize: 'xl' },
-      '& h2': { fontSize: 'lg' },
-      '& h3': { fontSize: 'md' },
-      '& ul, & ol': { pl: 5, mb: 2 },
-      '& li': { mb: 1 },
-      '& strong': { fontWeight: 'bold' }
-    }}>
-      <ReactMarkdown>{displayedText}</ReactMarkdown>
-    </Box>
-  );
-};
+const MarkdownMessage = ({ text }: { text: string }) => (
+  <Box sx={{
+    '& p': { mb: 2, _last: { mb: 0 } },
+    '& h1, & h2, & h3': { fontWeight: 'bold', mt: 3, mb: 2 },
+    '& h1': { fontSize: 'xl' },
+    '& h2': { fontSize: 'lg' },
+    '& h3': { fontSize: 'md' },
+    '& ul, & ol': { pl: 5, mb: 2 },
+    '& li': { mb: 1 },
+    '& strong': { fontWeight: 'bold' }
+  }}>
+    <ReactMarkdown>{text}</ReactMarkdown>
+  </Box>
+);
 
 export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
-  const { t } = useLanguage();
-  const { preferences } = usePreferenceState(); // Access preferences
+  const { t, language } = useLanguage();
+  const { preferences } = usePreferences();
+
   const [sessions, setSessions] = useState<ChatSession[]>(() => {
     try {
       const saved = localStorage.getItem('rwanda_tour_chat_sessions');
@@ -97,7 +56,7 @@ export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState('');
   const inputValueRef = useRef('');
-  
+
   useEffect(() => {
     inputValueRef.current = inputValue;
   }, [inputValue]);
@@ -109,12 +68,10 @@ export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
   const initialPromptProcessed = useRef(false);
   const currentSessionIdRef = useRef<string | null>(null);
 
-  // Sync currentSessionId with Ref for handleSend
   useEffect(() => {
     currentSessionIdRef.current = currentSessionId;
   }, [currentSessionId]);
 
-  // Sync sessions with localStorage
   useEffect(() => {
     localStorage.setItem('rwanda_tour_chat_sessions', JSON.stringify(sessions));
   }, [sessions]);
@@ -142,7 +99,7 @@ export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
 
     const userMessage: ChatMessage = {
       id: `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      text: text,
+      text,
       sender: 'user',
     };
 
@@ -151,14 +108,13 @@ export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
 
     if (!activeSessionId) {
       activeSessionId = Date.now().toString();
-      currentSessionIdRef.current = activeSessionId; // Fix race condition: sync ref immediately
+      currentSessionIdRef.current = activeSessionId;
       setCurrentSessionId(activeSessionId);
       isNewSession = true;
     }
 
-    // 1. Add user message to UI and session list
     setMessages((prev) => [...prev, userMessage]);
-    
+
     setSessions(prevSessions => {
       if (isNewSession) {
         return [{
@@ -167,39 +123,44 @@ export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
           messages: [userMessage],
           updatedAt: Date.now(),
         }, ...prevSessions];
-      } else {
-        return prevSessions.map(s => 
-          s.id === activeSessionId ? { ...s, messages: [...s.messages, userMessage], updatedAt: Date.now() } : s
-        );
       }
+      return prevSessions.map(s =>
+        s.id === activeSessionId ? { ...s, messages: [...s.messages, userMessage], updatedAt: Date.now() } : s
+      );
     });
 
     setInputValue('');
     setIsTyping(true);
 
     if (isNewSession) {
-      // Generate AI title in background
       fetch('/api/title', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: text })
       })
-      .then(res => res.json())
-      .then(data => {
-        if (data.title) {
-          setSessions(prevSessions => prevSessions.map(s => 
-            s.id === activeSessionId ? { ...s, title: data.title } : s
-          ));
-        }
-      })
-      .catch(err => console.error("Error generating title:", err));
+        .then(res => res.json())
+        .then(data => {
+          if (data.title) {
+            setSessions(prev => prev.map(s =>
+              s.id === activeSessionId ? { ...s, title: data.title } : s
+            ));
+          }
+        })
+        .catch(err => console.error('Title error:', err));
     }
+
+    // Build conversation history (last 10 messages, excluding the one just added)
+    const currentMessages = messages;
+    const history = currentMessages
+      .filter(m => !m.isError)
+      .slice(-10)
+      .map(m => ({ role: m.sender === 'user' ? 'user' as const : 'assistant' as const, content: m.text }));
 
     try {
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: text, preferences })
+        body: JSON.stringify({ message: text, preferences, history })
       });
 
       if (response.status === 429) {
@@ -207,81 +168,88 @@ export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
         setIsTyping(false);
         const rateLimitMsg: ChatMessage = {
           id: `error-${Date.now()}`,
-          text: "You've reached the daily limit of 10 messages.",
+          text: t('ai.ratelimit.text'),
           sender: 'ai',
           isError: true,
           resetTime: data.reset,
         };
         setMessages(prev => [...prev, rateLimitMsg]);
-        setSessions(prevSessions => prevSessions.map(s =>
+        setSessions(prev => prev.map(s =>
           s.id === activeSessionId ? { ...s, messages: [...s.messages, rateLimitMsg], updatedAt: Date.now() } : s
         ));
         return;
       }
 
+      if (response.status === 503) {
+        setIsTyping(false);
+        const errorMsg: ChatMessage = {
+          id: `error-${Date.now()}`,
+          text: t('ai.error.model_loading'),
+          sender: 'ai',
+          isError: true,
+        };
+        setMessages(prev => [...prev, errorMsg]);
+        setSessions(prev => prev.map(s =>
+          s.id === activeSessionId ? { ...s, messages: [...s.messages, errorMsg], updatedAt: Date.now() } : s
+        ));
+        return;
+      }
+
       if (!response.ok) throw new Error(`Server error: ${response.status}`);
-      if (!response.body) throw new Error("No response body");
+      if (!response.body) throw new Error('No response body');
 
       setIsTyping(false);
       setIsStreaming(true);
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
-      let aiText = "";
+      let aiText = '';
       const aiMessageId = `ai-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
-      // 2. Add empty AI message to UI and session list
-      const aiMessage: ChatMessage = { id: aiMessageId, text: "", sender: 'ai' };
+      const aiMessage: ChatMessage = { id: aiMessageId, text: '', sender: 'ai' };
       setMessages(prev => [...prev, aiMessage]);
-      
-      setSessions(prevSessions => prevSessions.map(s => 
+      setSessions(prev => prev.map(s =>
         s.id === activeSessionId ? { ...s, messages: [...s.messages, aiMessage] } : s
       ));
 
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
-
         aiText += decoder.decode(value, { stream: true });
-        
-        setMessages(prev => prev.map(m => 
+        setMessages(prev => prev.map(m =>
           m.id === aiMessageId ? { ...m, text: aiText } : m
         ));
       }
-      
+
       setIsStreaming(false);
 
-      // 3. Final session sync with the full AI text
-      setSessions(prevSessions => prevSessions.map(s => 
-        s.id === activeSessionId ? { 
-          ...s, 
+      setSessions(prev => prev.map(s =>
+        s.id === activeSessionId ? {
+          ...s,
           messages: s.messages.map(m => m.id === aiMessageId ? { ...m, text: aiText } : m),
-          updatedAt: Date.now() 
+          updatedAt: Date.now()
         } : s
       ));
-      
-    } catch (error) {
-      console.error("Chat error:", error);
+
+    } catch (error: unknown) {
+      console.error('Chat error:', error);
       setIsTyping(false);
       setIsStreaming(false);
       const errorMessage: ChatMessage = {
         id: `error-${Date.now()}`,
-        text: "Something went wrong. Please check your connection and try again.",
+        text: t('ai.error.generic'),
         sender: 'ai',
         isError: true,
       };
-      setMessages((prev) => [...prev, errorMessage]);
-      
-      // Save error message to session list
-      setSessions(prevSessions => prevSessions.map(s => 
+      setMessages(prev => [...prev, errorMessage]);
+      setSessions(prev => prev.map(s =>
         s.id === activeSessionId ? { ...s, messages: [...s.messages, errorMessage], updatedAt: Date.now() } : s
       ));
     }
-  }, [preferences]);
-
+  }, [preferences, messages, t]);
 
   const loadSession = (session: ChatSession) => {
-    if (!session || !session.messages || !Array.isArray(session.messages)) return;
+    if (!session?.messages || !Array.isArray(session.messages)) return;
     setCurrentSessionId(session.id);
     setMessages(session.messages.map(m => ({ ...m, isHistorical: true })));
   };
@@ -298,31 +266,42 @@ export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
     }
   }, [initialPrompt, handleSend]);
 
+  const speechLang: Record<string, string> = { en: 'en-US', fr: 'fr-FR', rw: 'rw-RW' };
+
   const handleMicClick = () => {
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    
-    if (!SpeechRecognition) {
-      alert("Your browser does not support Speech Recognition. Please try Chrome or Edge.");
+    type SpeechRecognitionCtor = new () => {
+      lang: string;
+      interimResults: boolean;
+      continuous: boolean;
+      start: () => void;
+      stop: () => void;
+      onstart: (() => void) | null;
+      onresult: ((e: { resultIndex: number; results: SpeechRecognitionResultList }) => void) | null;
+      onerror: ((e: { error: string }) => void) | null;
+      onend: (() => void) | null;
+    };
+
+    const w = window as { SpeechRecognition?: SpeechRecognitionCtor; webkitSpeechRecognition?: SpeechRecognitionCtor };
+    const SpeechRecognitionClass = w.SpeechRecognition || w.webkitSpeechRecognition;
+
+    if (!SpeechRecognitionClass) {
+      alert('Your browser does not support Speech Recognition. Please try Chrome or Edge.');
       return;
     }
-
     if (isListening) return;
 
-    const recognition = new SpeechRecognition();
-    recognition.lang = 'en-US';
+    const recognition = new SpeechRecognitionClass();
+    recognition.lang = speechLang[language] ?? 'en-US';
     recognition.interimResults = true;
     recognition.continuous = false;
 
     let hasSent = false;
 
-    recognition.onstart = () => {
-      setIsListening(true);
-    };
+    recognition.onstart = () => setIsListening(true);
 
-    recognition.onresult = (event: any) => {
+    recognition.onresult = (event) => {
       let interimTranscript = '';
       let finalTranscript = '';
-
       for (let i = event.resultIndex; i < event.results.length; ++i) {
         if (event.results[i].isFinal) {
           finalTranscript += event.results[i][0].transcript;
@@ -330,7 +309,6 @@ export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
           interimTranscript += event.results[i][0].transcript;
         }
       }
-
       if (finalTranscript && !hasSent) {
         hasSent = true;
         recognition.stop();
@@ -340,29 +318,29 @@ export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
       }
     };
 
-    recognition.onerror = (event: any) => {
-      console.error("Speech recognition error", event.error);
+    recognition.onerror = (event) => {
+      console.error('Speech recognition error', event.error);
       setIsListening(false);
     };
 
-    recognition.onend = () => {
-      setIsListening(false);
-    };
+    recognition.onend = () => setIsListening(false);
 
     try {
       recognition.start();
     } catch (e) {
-      console.error("Error starting speech recognition", e);
+      console.error('Error starting speech recognition', e);
       setIsListening(false);
     }
   };
+
+  const isReturningUser = sessions.length > 0;
 
   return (
     <Flex h="100vh" w="100%" color={textColor} overflow="hidden">
       {/* Sidebar */}
       <Flex
-        w={{ base: "0", md: "280px" }}
-        display={{ base: "none", md: "flex" }}
+        w={{ base: '0', md: '280px' }}
+        display={{ base: 'none', md: 'flex' }}
         direction="column"
         borderRightWidth="1px"
         borderColor={borderColor}
@@ -377,40 +355,33 @@ export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
           color="black"
           leftIcon={<Plus size={18} />}
           justifyContent="flex-start"
-          _hover={{ bg: "brand.400" }}
+          _hover={{ bg: 'brand.400' }}
           mb={8}
           onClick={startNewChat}
           flexShrink={0}
         >
-          New Chat
+          {t('chat.new')}
         </Button>
 
         <Box flex={1} overflowY="auto" pr={2} sx={{
-          '&::-webkit-scrollbar': {
-            width: '4px',
-          },
-          '&::-webkit-scrollbar-track': {
-            width: '6px',
-          },
-          '&::-webkit-scrollbar-thumb': {
-            background: 'rgba(255,255,255,0.1)',
-            borderRadius: '24px',
-          },
+          '&::-webkit-scrollbar': { width: '4px' },
+          '&::-webkit-scrollbar-track': { width: '6px' },
+          '&::-webkit-scrollbar-thumb': { background: 'rgba(255,255,255,0.1)', borderRadius: '24px' },
         }}>
           <VStack align="stretch" spacing={4}>
             <Text fontSize="xs" fontWeight="bold" color="appMuted" textTransform="uppercase" letterSpacing="widest">
-              Recent Chats
+              {t('chat.recent')}
             </Text>
             {sessions.length === 0 ? (
-              <Text fontSize="sm" color="appMuted" fontStyle="italic" px={2}>No recent chats</Text>
+              <Text fontSize="sm" color="appMuted" fontStyle="italic" px={2}>{t('chat.empty')}</Text>
             ) : (
               sessions.map(session => (
-                <HStack 
-                  key={session.id} 
-                  color={currentSessionId === session.id ? "brand.500" : "appMuted"} 
-                  _hover={{ color: "brand.500", cursor: "pointer" }} 
-                  p={2} 
-                  rounded="md" 
+                <HStack
+                  key={session.id}
+                  color={currentSessionId === session.id ? 'brand.500' : 'appMuted'}
+                  _hover={{ color: 'brand.500', cursor: 'pointer' }}
+                  p={2}
+                  rounded="md"
                   onClick={() => loadSession(session)}
                 >
                   <Clock size={16} />
@@ -426,15 +397,15 @@ export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
       <Flex flex={1} direction="column" position="relative" bg={mainBg}>
         {/* Header */}
         <Flex justify="space-between" align="center" p={4} borderBottomWidth="1px" borderColor={borderColor} bg={headerBg}>
-          <HStack color="appMuted" cursor="pointer" _hover={{ color: "brand.500" }} onClick={onGoHome}>
+          <HStack color="appMuted" cursor="pointer" _hover={{ color: 'brand.500' }} onClick={onGoHome}>
             <ChevronLeft size={18} />
-            <Text fontSize="sm">Home</Text>
+            <Text fontSize="sm">{t('chat.back_home')}</Text>
           </HStack>
           <HStack>
             <Avatar icon={<Bot size={18} />} boxSize={8} bg="brand.500" color="black" />
             <Box>
-              <Text fontWeight="bold" fontSize="sm" lineHeight="1">Rwanda Tourist Assistant</Text>
-              <Text fontSize="xs" color="appMuted">Travel Assistant</Text>
+              <Text fontWeight="bold" fontSize="sm" lineHeight="1">{t('nav.title')}</Text>
+              <Text fontSize="xs" color="appMuted">{t('ai.assistant.subtitle')}</Text>
             </Box>
           </HStack>
         </Flex>
@@ -444,21 +415,25 @@ export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
           {messages.length === 0 ? (
             <Flex direction="column" align="center" justify="center" h="100%" textAlign="center">
               <VStack spacing={6} maxW="md">
-                <Heading size="2xl" mb={4}>Welcome back!</Heading>
-                <Text color="appMuted" mb={4}>Pick up where you left off with your recent searches or start a new one.</Text>
-                
+                <Heading size="2xl" mb={4}>
+                  {isReturningUser ? t('ai.welcome.title') : t('ai.welcome.title_new')}
+                </Heading>
+                <Text color="appMuted" mb={4}>
+                  {isReturningUser ? t('ai.welcome.subtitle') : t('ai.welcome.subtitle_new')}
+                </Text>
+
                 <Box mb={4} position="relative">
                   {isListening && (
                     <motion.div
                       style={{
-                        position: "absolute",
-                        top: "50%",
-                        left: "50%",
-                        transform: "translate(-50%, -50%)",
-                        width: "120px",
-                        height: "120px",
-                        backgroundColor: "#00E68A",
-                        borderRadius: "50%",
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        width: '120px',
+                        height: '120px',
+                        backgroundColor: '#00E68A',
+                        borderRadius: '50%',
                         zIndex: 0,
                       }}
                       animate={{ scale: [1, 1.5, 1], opacity: [0.3, 0.1, 0.3] }}
@@ -466,13 +441,13 @@ export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
                     />
                   )}
                   <IconButton
-                    aria-label="Voice input"
+                    aria-label={t('ai.mic.listening')}
                     icon={isListening ? <Spinner size="lg" /> : <Mic size={32} />}
                     boxSize="80px"
                     rounded="full"
                     bg="brand.500"
                     color="black"
-                    _hover={{ bg: "brand.400", transform: "scale(1.05)" }}
+                    _hover={{ bg: 'brand.400', transform: 'scale(1.05)' }}
                     transition="all 0.2s"
                     boxShadow="0 0 30px rgba(0,230,138,0.4)"
                     onClick={handleMicClick}
@@ -481,15 +456,27 @@ export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
                   />
                 </Box>
                 <Text color="brand.500" mb={4} fontSize="sm" fontWeight="medium">
-                  {isListening ? t('ai.mic.listening') : "Click the mic, tell me — I'll find it"}
+                  {isListening ? t('ai.mic.listening') : t('ai.mic.prompt')}
                 </Text>
 
                 <HStack spacing={4} justify="center" flexWrap="wrap">
-                  <Button variant="outline" borderColor={borderColor} rounded="full" fontWeight="normal" onClick={() => handleSend("I want a 3-day luxury tour in Akagera")}>
-                    3-day luxury in Akagera
+                  <Button
+                    variant="outline"
+                    borderColor={borderColor}
+                    rounded="full"
+                    fontWeight="normal"
+                    onClick={() => handleSend(t('ai.suggestion.akagera'))}
+                  >
+                    {t('ai.suggestion.akagera')}
                   </Button>
-                  <Button variant="outline" borderColor={borderColor} rounded="full" fontWeight="normal" onClick={() => handleSend("Budget-friendly places in Kigali")}>
-                    Budget-friendly in Kigali
+                  <Button
+                    variant="outline"
+                    borderColor={borderColor}
+                    rounded="full"
+                    fontWeight="normal"
+                    onClick={() => handleSend(t('ai.suggestion.kigali'))}
+                  >
+                    {t('ai.suggestion.kigali')}
                   </Button>
                 </HStack>
               </VStack>
@@ -497,7 +484,7 @@ export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
           ) : (
             <VStack spacing={6} align="stretch" maxW="4xl" mx="auto">
               <AnimatePresence initial={false}>
-                {messages.map((msg, index) => (
+                {messages.map((msg) => (
                   <motion.div
                     key={msg.id}
                     initial={{ opacity: 0, y: 10 }}
@@ -525,7 +512,7 @@ export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
                           </HStack>
                           {msg.resetTime && (
                             <Text fontSize="xs" color="orange.600">
-                              Your limit resets at {msg.resetTime}. Come back then to continue exploring Rwanda!
+                              {t('ai.ratelimit.reset').replace('{time}', msg.resetTime)}
                             </Text>
                           )}
                         </Box>
@@ -541,11 +528,7 @@ export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
                           borderBottomLeftRadius={msg.sender === 'ai' ? '4px' : '2xl'}
                           boxShadow="sm"
                         >
-                          <TypewriterMarkdown
-                            text={msg.text}
-                            isAi={msg.sender === 'ai'}
-                            isHistorical={msg.isHistorical}
-                          />
+                          <MarkdownMessage text={msg.text} />
                         </Box>
                       )}
                     </Flex>
@@ -567,15 +550,15 @@ export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
         <Box p={4} maxW="4xl" w="100%" mx="auto">
           <HStack spacing={2} bg={bgColor} rounded="2xl" p={2} borderWidth="1px" borderColor={borderColor}>
             <IconButton
-              aria-label="Voice input"
+              aria-label={t('ai.mic.listening')}
               icon={<Mic size={20} />}
               variant="ghost"
               color="appMuted"
-              _hover={{ color: "brand.500", bg: "transparent" }}
+              _hover={{ color: 'brand.500', bg: 'transparent' }}
               onClick={handleMicClick}
             />
             <Input
-              placeholder="What kind of experience are you looking for? Tell me..."
+              placeholder={t('ai.input.placeholder')}
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handleSend()}
@@ -584,14 +567,14 @@ export function AIChatSection({ onGoHome, initialPrompt }: AIChatSectionProps) {
               color={textColor}
             />
             <IconButton
-              aria-label="Send message"
+              aria-label={t('ai.send')}
               icon={<Send size={20} />}
-              bg={inputValue.trim() ? "brand.500" : "transparent"}
-              color={inputValue.trim() ? "black" : "appMuted"}
+              bg={inputValue.trim() ? 'brand.500' : 'transparent'}
+              color={inputValue.trim() ? 'black' : 'appMuted'}
               rounded="xl"
               onClick={() => handleSend()}
-              isDisabled={!inputValue.trim()}
-              _hover={inputValue.trim() ? { bg: "brand.400" } : {}}
+              isDisabled={!inputValue.trim() || isStreaming}
+              _hover={inputValue.trim() ? { bg: 'brand.400' } : {}}
             />
           </HStack>
         </Box>

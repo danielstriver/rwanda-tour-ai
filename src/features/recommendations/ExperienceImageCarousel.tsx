@@ -1,5 +1,6 @@
 import { Box, HStack, Image } from "@chakra-ui/react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useState } from "react";
 
 import { useAutoSlide } from "../../hooks/useAutoSlide";
 
@@ -16,10 +17,18 @@ export function ExperienceImageCarousel({
   alt,
   minHeight = 260,
 }: ExperienceImageCarouselProps) {
-  const { activeIndex, setActiveIndex } = useAutoSlide(images.length);
+  const [isHovered, setIsHovered] = useState(false);
+  const { activeIndex, setActiveIndex } = useAutoSlide(images.length, 3200, isHovered);
 
   return (
-    <Box position="relative" overflow="hidden" minH={minHeight} h="100%">
+    <Box
+      position="relative"
+      overflow="hidden"
+      minH={minHeight}
+      h="100%"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       <AnimatePresence mode="wait">
         <MotionImage
           key={images[activeIndex]}

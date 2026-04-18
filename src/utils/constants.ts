@@ -31,6 +31,9 @@ export const SAMPLE_RECOMMENDATIONS: Recommendation[] = [
     ],
     icon: Mountain,
     accent: "linear-gradient(135deg, rgba(54,175,99,0.95), rgba(28,84,49,0.88))",
+    experienceTypes: ["Wildlife", "Nature"],
+    budgetTiers: ["Premium"],
+    durations: ["1 day", "3 days"],
   },
   {
     id: "lake-kivu",
@@ -54,6 +57,9 @@ export const SAMPLE_RECOMMENDATIONS: Recommendation[] = [
     ],
     icon: Trees,
     accent: "linear-gradient(135deg, rgba(43,108,176,0.95), rgba(26,54,93,0.88))",
+    experienceTypes: ["Nature"],
+    budgetTiers: ["Low", "Medium", "Premium"],
+    durations: ["3 days", "1 week"],
   },
   {
     id: "kigali-city-tour",
@@ -77,5 +83,8 @@ export const SAMPLE_RECOMMENDATIONS: Recommendation[] = [
     ],
     icon: Building2,
     accent: "linear-gradient(135deg, rgba(221,107,32,0.95), rgba(116,66,16,0.88))",
+    experienceTypes: ["Culture", "City"],
+    budgetTiers: ["Low", "Medium"],
+    durations: ["1 day", "3 days"],
   },
 ];

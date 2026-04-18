@@ -23,4 +23,7 @@ export interface Recommendation {
   imagePaths: string[];
   icon: LucideIcon;
   accent: string;
+  experienceTypes: ExperienceType[];
+  budgetTiers: BudgetTier[];
+  durations: TripDuration[];
 }

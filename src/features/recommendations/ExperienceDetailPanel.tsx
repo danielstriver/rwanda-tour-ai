@@ -19,6 +19,7 @@ import { MotionBox } from "../../components/MotionBox";
 import { SectionShell } from "../../components/SectionShell";
 import type { Recommendation } from "../../types/recommendation";
 import { ExperienceImageCarousel } from "./ExperienceImageCarousel";
+import { useLanguage } from "../../hooks/useLanguage";
 
 interface ExperienceDetailPanelProps {
   recommendation: Recommendation;
@@ -31,6 +32,7 @@ export function ExperienceDetailPanel({
   onBackToExperiences,
   onPlanExperience,
 }: ExperienceDetailPanelProps) {
+  const { t } = useLanguage();
   const mutedText = "appMuted";
   const subtleText = "appMuted";
   const titleColor = "appHeading";
@@ -66,7 +68,7 @@ export function ExperienceDetailPanel({
                   letterSpacing="0.14em"
                 >
                   <Sparkles size={15} />
-                  <Text>Selected experience</Text>
+                  <Text>{t("exp.selected")}</Text>
                 </HStack>
                 <Heading size="xl" color={titleColor}>
                   {recommendation.title}
@@ -80,7 +82,7 @@ export function ExperienceDetailPanel({
                 <Box rounded="2xl" p={4} bg={metaBg} borderWidth="1px" borderColor={metaBorderColor}>
                   <HStack spacing={2} color={subtleText} mb={1}>
                     <MapPin size={16} />
-                    <Text fontSize="sm">Location</Text>
+                    <Text fontSize="sm">{t("exp.location")}</Text>
                   </HStack>
                   <Text fontWeight="semibold" color={titleColor}>
                     {recommendation.shortLocation}
@@ -89,7 +91,7 @@ export function ExperienceDetailPanel({
                 <Box rounded="2xl" p={4} bg={metaBg} borderWidth="1px" borderColor={metaBorderColor}>
                   <HStack spacing={2} color={subtleText} mb={1}>
                     <Clock3 size={16} />
-                    <Text fontSize="sm">Suggested stay</Text>
+                    <Text fontSize="sm">{t("exp.stay")}</Text>
                   </HStack>
                   <Text fontWeight="semibold" color={titleColor}>
                     {recommendation.duration}
@@ -98,7 +100,7 @@ export function ExperienceDetailPanel({
                 <Box rounded="2xl" p={4} bg={metaBg} borderWidth="1px" borderColor={metaBorderColor}>
                   <HStack spacing={2} color={subtleText} mb={1}>
                     <Icon as={recommendation.icon} boxSize={4} />
-                    <Text fontSize="sm">Price range</Text>
+                    <Text fontSize="sm">{t("exp.price")}</Text>
                   </HStack>
                   <Text fontWeight="semibold" color={titleColor}>
                     {recommendation.priceRange}
@@ -108,7 +110,7 @@ export function ExperienceDetailPanel({
 
               <Box rounded="3xl" p={{ base: 5, md: 6 }} bg={highlightBg}>
                 <Text color={subtleText} textTransform="uppercase" letterSpacing="0.14em" fontSize="xs" mb={3}>
-                  Best for
+                  {t("exp.best_for")}
                 </Text>
                 <Text color={titleColor} fontWeight="semibold" fontSize="lg" mb={5}>
                   {recommendation.bestFor}
@@ -126,10 +128,10 @@ export function ExperienceDetailPanel({
 
               <HStack spacing={3} flexWrap="wrap">
                 <Button colorScheme="green" size="lg" onClick={() => onPlanExperience?.(recommendation.title)}>
-                  Plan This Experience
+                  {t("exp.plan")}
                 </Button>
                 <Button variant="ghost" size="lg" onClick={onBackToExperiences}>
-                  Back to experiences
+                  {t("exp.back")}
                 </Button>
               </HStack>
             </Stack>

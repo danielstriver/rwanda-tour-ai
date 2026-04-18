@@ -13,3 +13,10 @@ export interface ChatMessage {
   isError?: boolean;
   resetTime?: string;
 }
+
+export interface ChatSession {
+  id: string;
+  title: string;
+  messages: ChatMessage[];
+  updatedAt: number;
+}

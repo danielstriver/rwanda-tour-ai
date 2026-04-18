@@ -18,7 +18,7 @@ export function BetaBanner() {
     >
       <Container maxW="7xl">
         <Text fontSize="sm" fontWeight="medium">
-          {t("banner.beta") || "Rwanda Tourist Assistant is currently under development (Beta)."}
+          {t("banner.beta")}
         </Text>
       </Container>
     </Box>

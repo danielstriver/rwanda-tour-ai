@@ -1,5 +1,5 @@
 import { Box, Container, Heading, SimpleGrid, Stack, Text, useColorModeValue } from "@chakra-ui/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { SectionShell } from "../../components/SectionShell";
 import { SAMPLE_RECOMMENDATIONS } from "../../utils/constants";
@@ -7,6 +7,7 @@ import type { Recommendation } from "../../types/recommendation";
 import { ExperienceDetailPanel } from "./ExperienceDetailPanel";
 import { RecommendationCard } from "./RecommendationCard";
 import { useLanguage } from "../../hooks/useLanguage";
+import { usePreferences } from "../preferences/PreferenceContext";
 
 interface RecommendationSectionProps {
   onReady?: (actions: { scrollToRecommendations: () => void }) => void;
@@ -15,13 +16,32 @@ interface RecommendationSectionProps {
 
 export function RecommendationSection({ onReady, onPlanExperience }: RecommendationSectionProps) {
   const { t } = useLanguage();
-  const [selectedRecommendation, setSelectedRecommendation] = useState<Recommendation>(
-    SAMPLE_RECOMMENDATIONS[0],
-  );
+  const { preferences } = usePreferences();
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const detailsRef = useRef<HTMLDivElement | null>(null);
   const titleColor = "appHeading";
   const subtitleColor = "appMuted";
+
+  const filtered = useMemo(() => {
+    const scored = SAMPLE_RECOMMENDATIONS.map((rec) => {
+      let score = 0;
+      if (rec.experienceTypes.includes(preferences.experience)) score += 2;
+      if (rec.budgetTiers.includes(preferences.budget)) score += 1;
+      if (rec.durations.includes(preferences.duration)) score += 1;
+      return { rec, score };
+    });
+    const matches = scored
+      .filter(({ score }) => score > 0)
+      .sort((a, b) => b.score - a.score)
+      .map(({ rec }) => rec);
+    return matches.length > 0 ? matches : SAMPLE_RECOMMENDATIONS;
+  }, [preferences]);
+
+  const [selectedRecommendation, setSelectedRecommendation] = useState<Recommendation>(filtered[0]);
+
+  useEffect(() => {
+    setSelectedRecommendation(filtered[0]);
+  }, [filtered]);
 
   useEffect(() => {
     onReady?.({
@@ -58,13 +78,13 @@ export function RecommendationSection({ onReady, onPlanExperience }: Recommendat
               {t("rec.title")}
             </Heading>
             <Text color={subtitleColor} maxW="2xl">
-              {t("ai.response.default")}
+              {t("rec.subtitle")}
             </Text>
           </Stack>
         </SectionShell>
 
         <SimpleGrid columns={{ base: 1, md: 2, xl: 3 }} spacing={6}>
-          {SAMPLE_RECOMMENDATIONS.map((recommendation, index) => (
+          {filtered.map((recommendation, index) => (
             <RecommendationCard
               key={recommendation.id}
               recommendation={recommendation}

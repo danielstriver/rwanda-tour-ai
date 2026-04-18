@@ -12,6 +12,7 @@ interface PreferenceSelectorProps<TOption extends string> {
   value: TOption;
   options: TOption[];
   onChange: (value: TOption) => void;
+  translateOption?: (option: TOption) => string;
 }
 
 export function PreferenceSelector<TOption extends string>({
@@ -19,6 +20,7 @@ export function PreferenceSelector<TOption extends string>({
   value,
   options,
   onChange,
+  translateOption,
 }: PreferenceSelectorProps<TOption>) {
   const labelColor = "appHeading";
   const outlineBg = useColorModeValue("whiteAlpha.50", "whiteAlpha.100");
@@ -43,7 +45,7 @@ export function PreferenceSelector<TOption extends string>({
                 color={isActive ? undefined : outlineText}
                 onClick={() => onChange(option)}
               >
-                {option}
+                {translateOption ? translateOption(option) : option}
               </Button>
             </WrapItem>
           );
